@@ -45,7 +45,7 @@ To make it available in one project only, copy it to `<project>/.claude/skills/`
 
 ### Claude apps (claude.ai, desktop)
 
-Download `fact-check.skill` (a zip of the `fact-check/` folder) and upload it under **Settings → Capabilities → Skills**. Code execution must be enabled. If `jsonschema` is not installed in that environment, Claude installs it with the `pip` command above.
+Download [`fact-check.skill`](https://github.com/mmariniello90/fact-check/releases/latest/download/fact-check.skill) from the [latest release](https://github.com/mmariniello90/fact-check/releases/latest) (it is a zip of the `fact-check/` folder) and upload it under **Settings → Capabilities → Skills**. Code execution must be enabled. If `jsonschema` is not installed in that environment, Claude installs it with the `pip` command above.
 
 ## Usage
 
