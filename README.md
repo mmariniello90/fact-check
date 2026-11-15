@@ -1,4 +1,6 @@
-# fact-check
+<h1 align="center">
+  <img src="docs/logo.jpg" alt="fact-check" width="720">
+</h1>
 
 A [Claude skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) that checks whether a text Claude wrote is faithful to the web sources it cites, and whether those sources are reliable and independent of each other. The result is a one-screen HTML report: a verdict, the annotated text, one card per claim, and the list of sources.
 
