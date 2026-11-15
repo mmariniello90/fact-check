@@ -31,8 +31,9 @@ The report works on mobile, has light and dark mode, shows no numeric scores, an
 - **Python 3.9+**
 - **`jsonschema` 4.18 or later**. `render.py` exits with code 3 if it is missing or too old:
   ```bash
-  pip install --upgrade 'jsonschema>=4.18'
+  python3 -m pip install --upgrade 'jsonschema>=4.18'
   ```
+  If it is missing, the skill installs it by itself only in a sandbox (claude.ai, Cowork). On your own computer (Claude Code) it asks you first.
 - **Web access for Claude** (web search and fetch), to re-read the sources.
 - **Recommended:** an Agent/Task tool, so the check runs in an independent agent. Claude Code has one.
 
@@ -94,7 +95,7 @@ fact-check.skill             # packaged skill, ready to upload
 ## Running the tests
 
 ```bash
-python fact-check/evals/run_tests.py
+python3 fact-check/evals/run_tests.py
 ```
 
 The runner renders every valid fixture and checks the computed verdict. It also checks that every invalid fixture is rejected with the expected rule id. Rendered reports go to `fact-check/evals/out/` by default. Open one in a browser to see what a report looks like.

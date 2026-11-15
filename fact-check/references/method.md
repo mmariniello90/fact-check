@@ -34,11 +34,17 @@ You receive:
 Ground rules:
 - **Read every page now.** Fetch each URL with WebFetch (or the browser if WebFetch
   cannot render it). Never rely on a summary, a snippet or anything already in a
-  conversation: the point is to see what the page says today.
+  conversation: the point is to see what the page says today. One exception: a full
+  page fetch you made yourself earlier today, during a previous fact-check in the same
+  session, counts as read; search-result snippets never do.
+- **If a URL can't be fetched directly** (the tool only opens links that appeared in a
+  search), search for the page by its title or site and fetch the result.
 - **Excerpts are copied, never paraphrased or translated.** An excerpt is a passage of at
   most 15 words copied character for character from the page, in the page's language. It
   must be findable with Ctrl+F on the page. If you cannot quote it, you have not found it.
   (The 15-word cap also keeps quotations short enough to respect copyright.)
+  When you can, pick a stretch without quotation marks or apostrophes: curly and straight
+  versions look alike and are the most common reason an excerpt fails to match.
 - **When a page cannot be read** (paywall, 404, block, timeout), say so with `access`;
   don't guess its content from the title or the URL.
 - **Write prose for a busy reader.** `reason`, `headline`, omissions and follow-ups are
@@ -119,6 +125,21 @@ different value, use `partial`, add the dissenting passage as `contradicts` evid
 record an `unreported_disagreement` omission. A lone low-reliability source does not
 turn a well-supported claim into `partial`; mention it only if it matters.
 
+**Reported claims ("X says that…").** When the text reports someone's claim, check two
+things: that the person really said it, and whether what they said holds.
+- If the text distances itself from the claim ("X claims…, but…", "treat this as
+  unconfirmed", "this is disputed"), judge only the attribution: did X say it?
+- If the text passes it on as information (an origin, a figure, a cause, an
+  "alternative theory" with no doubt raised about its content), judge the content too. A
+  correct attribution of something the best evidence contradicts is `partial`: add the
+  attribution as `supports`, the contrary evidence as `contradicts`, at least one
+  `qualifies` item (the passage that best shows where the claim falls short), and an
+  `unreported_disagreement` omission. Rule C5 accepts a `partial` claim with either a
+  `qualifies` item or an issue; here give the `qualifies` item anyway, because it is what
+  shows the reader which part is wrong.
+- A general caveat elsewhere ("none of these is confirmed") lowers the stakes but does not
+  tell the reader *which* part is wrong; if you have that evidence, report it.
+
 A claim can be `supported` by one source and still carry `citation_mismatch` if the
 *cited* source doesn't hold it: in that case the outcome is `partial`, because the
 citation the reader would click is wrong. Keep `issues` empty for `supported` claims.
@@ -136,9 +157,19 @@ For every source, cited or found:
    content), `low_quality` (SEO or generated content, no verifiable author, content farm).
 2. **Date**: `published_at` as `YYYY`, `YYYY-MM` or `YYYY-MM-DD`; `null` if undated.
    An undated page on a fast-moving topic is a reliability problem.
-3. **Lateral reading**: run at least one search *about the publisher or author*, outside
-   the page itself (who runs it, funding, track record, what others say about it).
-   Write what you learned in `lateral_check`. Don't evaluate a site by its own "About" page.
+3. **Lateral reading**: find out who stands behind the page from outside the page itself
+   (who runs it, funding, track record, what others say about it). Write what you learned
+   in `lateral_check`. Don't evaluate a site by its own "About" page.
+   - **Search** for any publisher you could not describe confidently without one: blogs,
+     small or niche sites, company content, anything with a `.org` or "foundation" name
+     (ownership is often not what the name suggests), and every source that carries a
+     critical claim alone.
+   - **Skip the search** for long-established outlets whose ownership and editorial
+     standards are common knowledge (national newspapers and broadcasters, wire services,
+     major science magazines, peer-reviewed journals, government agencies). Write what you
+     know in `lateral_check`; don't restate their own self-description.
+   - Searches cost the reader time: group them (one query can cover two related
+     publishers) and stop once you can fill `lateral_check` honestly.
 4. **Expertise**: does the author or publisher have standing on this topic?
 5. **Conflict of interest**: does the publisher gain from the claim (sells the product,
    represents the industry, affiliate links)? Write it in `conflict_of_interest`, else `null`.

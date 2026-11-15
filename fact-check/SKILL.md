@@ -1,5 +1,5 @@
 ---
-name: fact-check
+name: "fact-check"
 description: Checks whether a text Claude generated is faithful to the web sources it cites and rests on reliable, independent sources, then shows the result as a one-screen HTML report (verdict, annotated text, claim cards, sources). Use it whenever the user types /fact-check, or asks to verify, double-check or fact-check an earlier answer or a quoted passage ("is this true?", "check your sources", "can I trust this?", "where did you get that number?"), including in Italian ("verifica le fonti", "controlla se è vero", "fact check", "è affidabile?", "controlla le fonti di questa risposta", "da dove viene questo dato?"). Use it even when the answer cited no sources.
 ---
 
@@ -21,6 +21,19 @@ Files in this skill:
 - **Text**: the passage the user quoted in their message (`meta.scope = "selection"`);
   if they didn't quote one, your last answer in the conversation (`"full_response"`).
   Copy it verbatim: the report re-assembles it character by character.
+  - **Where to read it.** A quoted passage may arrive as an uploaded file (e.g.
+    `excerpt_from_previous_claude_message.txt`). If the file is listed but missing from
+    `/mnt/user-data/uploads`, use the copy shown in your context. Never stop to ask for a
+    re-upload when the text is already in front of you.
+  - **Strip interface residue first.** Text copied from the chat often carries the labels
+    of citation chips: lines that hold only a domain or site name (`discovermagazine`,
+    `10tv`), a truncated title or URL slug (`536 777fec50 29bd ...`), or a counter like
+    `+4`. They are not part of the answer: remove them, keep everything else exactly as
+    written, and keep paragraph breaks as `\n\n`. Then use the cleaned text as
+    `text.original`.
+  - **Sources hidden in the residue.** Those chip labels tell you which sources the
+    original answer attached to each paragraph. Use them to recover the cited URLs from
+    the conversation, and attach each paragraph's sources to the claims in it.
 - **Sources**: the URLs cited in that text or attached to the original answer (search
   result citations, links, "Sources:" lists). Recover them from the conversation.
 - **No sources?** Set `meta.original_had_citations = false`. The check still runs: the
@@ -55,7 +68,7 @@ meta: language=<code>, scope=<selection|full_response>, verifier_mode=independen
       checked_at=<ISO date-time>, original_had_citations=<true|false>
 
 Re-fetch every page yourself. Save the report to <work dir>/report.json, then run
-  python <skill>/scripts/render.py <work dir>/report.json --check-only
+  python3 <skill>/scripts/render.py <work dir>/report.json --check-only
 and fix the JSON until it prints OK. Reply with the path of the JSON and the OK line.
 ```
 
@@ -69,8 +82,30 @@ already in the conversation.
 
 ## 3. Validate and render
 
+Use `python3` in every command (on many systems, macOS included, `python` does not
+exist); fall back to `python` only where `python3` is missing.
+
+First make sure the validator's one dependency, `jsonschema` 4.18 or later, is present
+(it is often missing):
+
 ```bash
-python <skill>/scripts/render.py report.json -o fact-check-report.html
+python3 -c "import jsonschema, importlib.metadata as m; assert tuple(map(int, m.version('jsonschema').split('.')[:2])) >= (4, 18)"
+```
+
+If that fails:
+- **In a sandbox** (claude.ai, Cowork, a disposable container): install it with
+  `python3 -m pip install --quiet --upgrade 'jsonschema>=4.18'`. Add
+  `--break-system-packages` only if pip refuses with an "externally-managed-environment"
+  error.
+- **On the user's own computer** (Claude Code, a terminal): ask before installing
+  anything. Tell them the validator needs `jsonschema>=4.18` and suggest
+  `python3 -m pip install --user --upgrade 'jsonschema>=4.18'`, or their own virtualenv.
+  Install only after they agree.
+
+Then validate and render:
+
+```bash
+python3 <skill>/scripts/render.py report.json -o fact-check-report.html
 ```
 
 `render.py` validates against the schema (Draft 2020-12), checks every rule in
@@ -78,8 +113,8 @@ python <skill>/scripts/render.py report.json -o fact-check-report.html
 failure it prints `FAIL <rule-id>: ...` lines and exits non-zero, writing nothing: fix the
 JSON (or, with an independent agent, send the failures back to that same agent to fix)
 and run it again. Never render an invalid report and never hand-edit the HTML: the
-report has to look the same on every run. It needs `jsonschema` 4.18 or later
-(`pip install --upgrade 'jsonschema>=4.18'`; exit code 3 means it is missing or too old).
+report has to look the same on every run. Exit code 3 means `jsonschema` is missing or
+older than 4.18: go back to the dependency check above.
 
 If the verifier saved the text of each fetched page as `<source_id>.txt` in a folder,
 add `--pages <folder>` so excerpts are also checked verbatim (rule C10).
