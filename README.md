@@ -8,16 +8,23 @@ It is built for the moment you get an answer from Claude and wonder: *can I trus
 
 ## What it does
 
-1. **Picks the text to check**: a passage you quote, or Claude's last answer, plus the URLs it cited. If the answer cited nothing, the skill searches for sources from scratch.
-2. **Hands the analysis to a separate verifier.** When an Agent/Task tool is available, a fresh agent that did not write the text re-fetches every page and checks each claim. Otherwise it runs in the same session but re-fetches every page instead of relying on memory.
-3. **Checks each claim** for faithfulness to its source (`supported`, `partial`, `unsupported`, `contradicted`, `unverifiable`, `not_checkable`), rates each source's reliability, groups sources by origin (ten articles rewriting one press release count as one source), and looks for important omissions.
-4. **Computes the verdict by fixed rules** instead of asking the model for a judgment:
-   - **Problematic**: a critical claim is unsupported or contradicted, or rests only on low-reliability sources.
-   - **Reliable**: every critical claim is supported by at least 2 independent sources, and nothing is contradicted.
-   - **Needs review**: everything else.
-5. **Validates and renders the report** with `scripts/render.py`. The script checks the JSON against the schema and every invariant, and recomputes the verdict itself. An invalid report is never rendered.
+<img src="docs/screenshot.png" align="left" width="320" alt="Fact-check report with a Needs review verdict: claims about the origin of the 'eight spiders a year' myth, underlined in green when supported, orange when partial, and dashed when they are Claude's own synthesis">
+
+**1. Picks the text to check:** a passage you quote, or Claude's last answer, plus the URLs it cited. If the answer cited nothing, the skill searches for sources from scratch.
+
+**2. Hands the analysis to a separate verifier.** When an Agent/Task tool is available, a fresh agent that did not write the text re-fetches every page and checks each claim. Otherwise it runs in the same session but re-fetches every page instead of relying on memory.
+
+**3. Checks each claim** for faithfulness to its source (`supported`, `partial`, `unsupported`, `contradicted`, `unverifiable`, `not_checkable`), rates each source's reliability, groups sources by origin (ten articles rewriting one press release count as one source), and looks for important omissions.
+
+**4. Computes the verdict by fixed rules** instead of asking the model for a judgment. *Problematic*: a critical claim is unsupported or contradicted, or rests only on low-reliability sources. *Reliable*: every critical claim is supported by at least 2 independent sources, and nothing is contradicted. *Needs review*: everything else.
+
+**5. Validates and renders the report** with `scripts/render.py`. The script checks the JSON against the schema and every invariant, and recomputes the verdict itself. An invalid report is never rendered.
+
+*On the left: checking where the "eight spiders a year" myth comes from. The Snopes hoax story holds up, but the 1954-book theory traces back to that same hoax.*
 
 The report works on mobile, has light and dark mode, shows no numeric scores, and never relies on color alone. Each claim links to the exact excerpt on the source page through a text fragment. UI labels are available in English and Italian; the generated content follows the user's language.
+
+<br clear="left">
 
 ## Requirements
 
