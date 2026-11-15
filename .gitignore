@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Generated test output (run fact-check/evals/run_tests.py to rebuild)
+fact-check/evals/out/

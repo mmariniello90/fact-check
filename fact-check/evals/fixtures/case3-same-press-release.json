@@ -1,0 +1,200 @@
+{
+  "schema_version": "1.0",
+  "meta": {
+    "checked_at": "2026-11-14T08:10:00+00:00",
+    "language": "en",
+    "scope": "full_response",
+    "verifier_mode": "independent_agent",
+    "original_had_citations": true
+  },
+  "verdict": {
+    "status": "needs_review",
+    "headline": "The articles agree, but all three repeat the same company press release: no independent confirmation.",
+    "basis": [
+      "c1"
+    ],
+    "counts": {
+      "supported": 1,
+      "partial": 1,
+      "unsupported": 0,
+      "contradicted": 0,
+      "unverifiable": 0,
+      "not_checkable": 0
+    }
+  },
+  "text": {
+    "original": "Voltix's new solid-state battery charges from 10% to 80% in 10 minutes, and it will be in cars by 2027.",
+    "segments": [
+      {
+        "text": "Voltix's new solid-state battery charges from 10% to 80% in 10 minutes,",
+        "claim_id": "c1"
+      },
+      {
+        "text": " ",
+        "claim_id": null
+      },
+      {
+        "text": "and it will be in cars by 2027.",
+        "claim_id": "c2"
+      }
+    ]
+  },
+  "claims": [
+    {
+      "id": "c1",
+      "text": "Voltix's new solid-state battery charges from 10% to 80% in 10 minutes,",
+      "kind": "number",
+      "critical": true,
+      "critical_reason": "Surprising performance claim, central to the answer.",
+      "outcome": "supported",
+      "reason": "All three articles give the figure, but they quote the same press release.",
+      "issues": [],
+      "cited_source_ids": [
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "evidence": [
+        {
+          "source_id": "s1",
+          "relation": "supports",
+          "excerpt": "from 10 to 80 percent in just 10 minutes",
+          "deep_link": "https://tech-news-a.example.com/voltix-battery#:~:text=from%2010%20to%2080%20percent%20in%20just%2010%20minutes"
+        },
+        {
+          "source_id": "s2",
+          "relation": "supports",
+          "excerpt": "a 10-80% charge takes ten minutes, the company said",
+          "deep_link": "https://daily-b.example.com/science/voltix-ten-minute-charge#:~:text=a%2010-80%25%20charge%20takes%20ten%20minutes"
+        },
+        {
+          "source_id": "s3",
+          "relation": "supports",
+          "excerpt": "10% to 80% in 10 minutes",
+          "deep_link": "https://gadget-c.example.net/voltix-80-percent#:~:text=10%25%20to%2080%25%20in%2010%20minutes"
+        }
+      ],
+      "independent_source_count": 1
+    },
+    {
+      "id": "c2",
+      "text": "and it will be in cars by 2027.",
+      "kind": "date",
+      "critical": false,
+      "critical_reason": null,
+      "outcome": "partial",
+      "reason": "The release says it aims for 2027, a target, not a commitment.",
+      "issues": [
+        "hedge_dropped"
+      ],
+      "cited_source_ids": [
+        "s1"
+      ],
+      "evidence": [
+        {
+          "source_id": "s1",
+          "relation": "qualifies",
+          "excerpt": "aims to begin supplying automakers in 2027",
+          "deep_link": "https://tech-news-a.example.com/voltix-battery#:~:text=aims%20to%20begin%20supplying%20automakers%20in%202027"
+        }
+      ],
+      "independent_source_count": 0
+    }
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "url": "https://tech-news-a.example.com/voltix-battery",
+      "title": "Voltix unveils ten-minute solid-state battery",
+      "publisher": "Tech News A",
+      "author": null,
+      "published_at": "2026-10-02",
+      "cited_in_original": true,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "secondary",
+      "reliability": {
+        "level": "medium",
+        "reason": "Tech site; rewrites the press release without own tests.",
+        "lateral_check": "Established tech outlet; editorial staff named on its masthead."
+      },
+      "conflict_of_interest": null,
+      "origin_group_id": "g1"
+    },
+    {
+      "id": "s2",
+      "url": "https://daily-b.example.com/science/voltix-ten-minute-charge",
+      "title": "Ten-minute charging: Voltix's bold claim",
+      "publisher": "Daily B",
+      "author": "Science desk",
+      "published_at": "2026-10-02",
+      "cited_in_original": true,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "secondary",
+      "reliability": {
+        "level": "medium",
+        "reason": "General newspaper; quotes the company only.",
+        "lateral_check": "National daily with a public corrections policy."
+      },
+      "conflict_of_interest": null,
+      "origin_group_id": "g1"
+    },
+    {
+      "id": "s3",
+      "url": "https://gadget-c.example.net/voltix-80-percent",
+      "title": "Voltix battery hits 80% in 10 minutes",
+      "publisher": "Gadget C",
+      "author": null,
+      "published_at": "2026-10-03",
+      "cited_in_original": true,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "aggregator",
+      "reliability": {
+        "level": "low",
+        "reason": "Republishes press releases, no bylines.",
+        "lateral_check": "No coverage of the site by other outlets; anonymous ownership."
+      },
+      "conflict_of_interest": null,
+      "origin_group_id": "g1"
+    }
+  ],
+  "origin_groups": [
+    {
+      "id": "g1",
+      "label": "Voltix press release of 02/10/2026",
+      "source_ids": [
+        "s1",
+        "s2",
+        "s3"
+      ]
+    }
+  ],
+  "omissions": [
+    {
+      "type": "missing_perspective",
+      "description": "No independent lab or expert has tested the charging claim; only the company is quoted.",
+      "source_ids": [
+        "s1",
+        "s2"
+      ]
+    }
+  ],
+  "follow_ups": [
+    {
+      "text": "Look for an independent test or peer-reviewed paper on the battery",
+      "claim_id": "c1"
+    },
+    {
+      "text": "Check which automakers have actually signed supply deals",
+      "claim_id": "c2"
+    }
+  ]
+}

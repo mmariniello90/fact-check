@@ -1,0 +1,286 @@
+{
+  "schema_version": "1.0",
+  "meta": {
+    "checked_at": "2026-11-14T07:10:00+01:00",
+    "language": "it",
+    "scope": "selection",
+    "verifier_mode": "independent_agent",
+    "original_had_citations": true
+  },
+  "verdict": {
+    "status": "needs_review",
+    "headline": "Il dato principale regge, ma un'affermazione è smentita dalla sua stessa fonte.",
+    "basis": [
+      "c2",
+      "c3"
+    ],
+    "counts": {
+      "supported": 1,
+      "partial": 1,
+      "unsupported": 0,
+      "contradicted": 1,
+      "unverifiable": 0,
+      "not_checkable": 1
+    }
+  },
+  "text": {
+    "original": "Il mercato europeo delle pompe di calore è cresciuto del 38% nel 2022. La crescita è dovuta agli incentivi pubblici, e l'Italia è il primo mercato del continente. Una tendenza destinata a durare.",
+    "segments": [
+      {
+        "text": "Il mercato europeo delle pompe di calore è cresciuto del 38% nel 2022.",
+        "claim_id": "c1"
+      },
+      {
+        "text": "  ",
+        "claim_id": null
+      },
+      {
+        "text": "La crescita è dovuta agli incentivi pubblici",
+        "claim_id": "c2"
+      },
+      {
+        "text": ", ",
+        "claim_id": null
+      },
+      {
+        "text": "e l'Italia è il primo mercato del continente.",
+        "claim_id": "c3"
+      },
+      {
+        "text": " ",
+        "claim_id": null
+      },
+      {
+        "text": "Una tendenza destinata a durare.",
+        "claim_id": "c4"
+      }
+    ]
+  },
+  "claims": [
+    {
+      "id": "c1",
+      "text": "Il mercato europeo delle pompe di calore è cresciuto del 38% nel 2022.",
+      "kind": "number",
+      "critical": true,
+      "critical_reason": "È il dato centrale della risposta.",
+      "outcome": "supported",
+      "reason": "Il 38% compare nel rapporto primario ed è confermato da una fonte indipendente.",
+      "issues": [],
+      "cited_source_ids": [
+        "s1"
+      ],
+      "evidence": [
+        {
+          "source_id": "s1",
+          "relation": "supports",
+          "excerpt": "le vendite sono cresciute del 38% rispetto al 2021",
+          "deep_link": "https://example.org/rapporto-2022#:~:text=le%20vendite%20sono%20cresciute%20del%2038%25"
+        },
+        {
+          "source_id": "s3",
+          "relation": "supports",
+          "excerpt": "un balzo del 38% nelle vendite europee",
+          "deep_link": "https://testata-b.example.com/pompe-di-calore#:~:text=un%20balzo%20del%2038%25"
+        }
+      ],
+      "independent_source_count": 2
+    },
+    {
+      "id": "c2",
+      "text": "La crescita è dovuta agli incentivi pubblici",
+      "kind": "fact",
+      "critical": false,
+      "critical_reason": null,
+      "outcome": "partial",
+      "reason": "La fonte indica gli incentivi come uno dei fattori, non come l'unica causa.",
+      "issues": [
+        "overgeneralized",
+        "hedge_dropped"
+      ],
+      "cited_source_ids": [
+        "s4"
+      ],
+      "evidence": [
+        {
+          "source_id": "s1",
+          "relation": "qualifies",
+          "excerpt": "tra i fattori principali, insieme al prezzo del gas",
+          "deep_link": "https://example.org/rapporto-2022#:~:text=tra%20i%20fattori%20principali"
+        },
+        {
+          "source_id": "s4",
+          "relation": "supports",
+          "excerpt": "è merito degli incentivi statali",
+          "deep_link": "https://blog-settore.example.net/boom#:~:text=%C3%A8%20merito%20degli%20incentivi"
+        }
+      ],
+      "independent_source_count": 1
+    },
+    {
+      "id": "c3",
+      "text": "e l'Italia è il primo mercato del continente.",
+      "kind": "fact",
+      "critical": false,
+      "critical_reason": null,
+      "outcome": "contradicted",
+      "reason": "La fonte citata colloca l'Italia al terzo posto, non al primo.",
+      "issues": [
+        "citation_mismatch"
+      ],
+      "cited_source_ids": [
+        "s2"
+      ],
+      "evidence": [
+        {
+          "source_id": "s2",
+          "relation": "contradicts",
+          "excerpt": "l'Italia si conferma terzo mercato europeo",
+          "deep_link": "https://testata-a.example.com/mercato#:~:text=l'Italia%20si%20conferma%20terzo"
+        }
+      ],
+      "independent_source_count": 0
+    },
+    {
+      "id": "c4",
+      "text": "Una tendenza destinata a durare.",
+      "kind": "opinion",
+      "critical": false,
+      "critical_reason": null,
+      "outcome": "not_checkable",
+      "reason": "È una previsione del modello, non un fatto attribuito a una fonte.",
+      "issues": [],
+      "cited_source_ids": [],
+      "evidence": [],
+      "independent_source_count": 0
+    }
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "url": "https://example.org/rapporto-2022",
+      "title": "Rapporto annuale sul mercato delle pompe di calore 2022",
+      "publisher": "Associazione europea di settore",
+      "author": null,
+      "published_at": "2023-06",
+      "cited_in_original": true,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "primary",
+      "reliability": {
+        "level": "high",
+        "reason": "Dati raccolti direttamente dai produttori, metodologia pubblicata.",
+        "lateral_check": "Citata come riferimento da agenzie pubbliche dell'energia."
+      },
+      "conflict_of_interest": "Rappresenta i produttori: ha interesse a mostrare crescita.",
+      "origin_group_id": "g1"
+    },
+    {
+      "id": "s2",
+      "url": "https://testata-a.example.com/mercato",
+      "title": "Pompe di calore, l'Europa accelera",
+      "publisher": "Testata A",
+      "author": "Redazione economia",
+      "published_at": "2023-03-14",
+      "cited_in_original": true,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "secondary",
+      "reliability": {
+        "level": "medium",
+        "reason": "Testata generalista; riprende un comunicato senza aggiungere dati.",
+        "lateral_check": "Quotidiano nazionale con policy di rettifica pubblica."
+      },
+      "conflict_of_interest": null,
+      "origin_group_id": "g2"
+    },
+    {
+      "id": "s3",
+      "url": "https://testata-b.example.com/pompe-di-calore",
+      "title": "Boom delle pompe di calore in Europa",
+      "publisher": "Testata B",
+      "author": null,
+      "published_at": "2023-03-13",
+      "cited_in_original": true,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "secondary",
+      "reliability": {
+        "level": "medium",
+        "reason": "Testata di settore; stesso comunicato della Testata A.",
+        "lateral_check": "Rivista di settore attiva da oltre dieci anni."
+      },
+      "conflict_of_interest": null,
+      "origin_group_id": "g2"
+    },
+    {
+      "id": "s4",
+      "url": "https://blog-settore.example.net/boom",
+      "title": "Perché tutti comprano pompe di calore",
+      "publisher": "Blog di settore",
+      "author": null,
+      "published_at": null,
+      "cited_in_original": true,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "low_quality",
+      "reliability": {
+        "level": "low",
+        "reason": "Nessun autore, nessuna data, link di affiliazione a rivenditori.",
+        "lateral_check": "Nessuna menzione del sito da parte di fonti esterne."
+      },
+      "conflict_of_interest": "Guadagna sulle vendite tramite link di affiliazione.",
+      "origin_group_id": "g3"
+    }
+  ],
+  "origin_groups": [
+    {
+      "id": "g1",
+      "label": "Rapporto annuale dell'associazione di settore",
+      "source_ids": [
+        "s1"
+      ]
+    },
+    {
+      "id": "g2",
+      "label": "Comunicato stampa del 13/03/2023",
+      "source_ids": [
+        "s2",
+        "s3"
+      ]
+    },
+    {
+      "id": "g3",
+      "label": "Blog di settore",
+      "source_ids": [
+        "s4"
+      ]
+    }
+  ],
+  "omissions": [
+    {
+      "type": "missing_context",
+      "description": "Il rapporto primario indica anche il prezzo del gas come fattore di crescita; il testo non lo menziona.",
+      "source_ids": [
+        "s1"
+      ]
+    }
+  ],
+  "follow_ups": [
+    {
+      "text": "Controlla la classifica dei mercati nazionali nel rapporto primario",
+      "claim_id": "c3"
+    },
+    {
+      "text": "Verifica quanto pesano gli incentivi rispetto al prezzo del gas",
+      "claim_id": "c2"
+    }
+  ]
+}

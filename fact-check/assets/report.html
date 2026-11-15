@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="__FC_LANG__">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fact-check</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
+<style>
+:root{
+  --surface-0:#f5f4ef;--surface-1:#faf9f5;--surface-2:#ffffff;
+  --text-primary:#1f1e1d;--text-secondary:#5f5e5a;--text-muted:#888780;
+  --text-success:#3b6d11;--text-warning:#854f0b;--text-danger:#a32d2d;--text-accent:#185fa5;
+  --bg-success:#eaf3de;--bg-warning:#faeeda;--bg-danger:#fcebeb;--bg-accent:#e6f1fb;
+  --border:rgba(0,0,0,.10);--border-strong:rgba(0,0,0,.18);
+  --border-success:#97c459;--border-warning:#ef9f27;--border-danger:#f09595;
+  --radius:8px;
+}
+@media (prefers-color-scheme: dark){:root{
+  --surface-0:#1a1a19;--surface-1:#222221;--surface-2:#2a2a28;
+  --text-primary:#f1efe8;--text-secondary:#b4b2a9;--text-muted:#888780;
+  --text-success:#97c459;--text-warning:#fac775;--text-danger:#f09595;--text-accent:#85b7eb;
+  --bg-success:#27500a;--bg-warning:#633806;--bg-danger:#791f1f;--bg-accent:#0c447c;
+  --border:rgba(255,255,255,.10);--border-strong:rgba(255,255,255,.20);
+  --border-success:#639922;--border-warning:#ba7517;--border-danger:#e24b4a;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--surface-0);color:var(--text-primary);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:420px;margin:0 auto;padding:16px 12px 32px}
+.fc-card{background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;padding:.9rem 1rem;margin-bottom:10px}
+.fc-lbl{margin:0 0 8px;font-size:12px;color:var(--text-muted)}
+.fc-badge{display:inline-block;font-size:13px;font-weight:500;padding:4px 10px;border-radius:var(--radius);margin-bottom:8px}
+.fc-badge i{vertical-align:-2px;margin-right:4px}
+.fc-headline{margin:0 0 10px;font-size:15px;line-height:1.5}
+.fc-counts{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:13px;color:var(--text-secondary)}
+.fc-text{margin:0;font-size:15px;line-height:1.85;white-space:pre-wrap}
+.fc-cl{cursor:pointer;padding-bottom:1px}
+.fc-cl:focus-visible,.fc-head:focus-visible,.fc-fu:focus-visible{outline:2px solid var(--text-accent);outline-offset:2px;border-radius:2px}
+.fc-head{display:flex;align-items:center;gap:8px;cursor:pointer}
+.fc-body{margin-top:10px}
+.fc-closed .fc-body{display:none}
+.fc-closed .ti-chevron-up{transform:rotate(180deg)}
+.fc-ev{border-left:2px solid var(--border-strong);padding:2px 0 2px 10px;margin:8px 0}
+.fc-ev p{margin:0;font-size:13px;font-style:italic;color:var(--text-secondary)}
+.fc-ev a{font-size:12px;color:var(--text-accent);text-decoration:none}
+.fc-chip{display:inline-block;background:var(--surface-1);padding:3px 8px;border-radius:var(--radius);font-size:12px;color:var(--text-secondary);margin:0 4px 4px 0;white-space:nowrap}
+.fc-row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;padding:7px 0;border-bottom:0.5px solid var(--border)}
+.fc-row>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fc-row a{color:inherit;text-decoration:none}
+.fc-last{border-bottom:none}
+.fc-title{flex:1;min-width:0;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fc-out{margin:0;font-size:13px;font-weight:500}
+.fc-why{margin:4px 0 0;font-size:14px;line-height:1.5}
+.fc-group{background:var(--surface-1);border-radius:var(--radius);padding:4px 10px;margin:6px 0}
+.fc-group-lbl{margin:4px 0 0;font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.note{margin:2px 0 6px;font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fc-om{margin:0 0 6px;font-size:14px;line-height:1.5}
+.fc-om:last-child{margin-bottom:0}
+.fc-fu{cursor:pointer}
+.fc-foot{margin:6px 4px 2px;font-size:12px;color:var(--text-muted);line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap" id="fc-root"></div>
+
+<!-- Report data, injected by scripts/render.py after validation. Do not edit by hand. -->
+<script id="fc-data" type="application/json">__FC_DATA__</script>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------------------------------------------------------------- labels
+   Visible UI labels, keyed by language then by enum value.
+   Add a language by copying the "en" block. Unknown languages fall back to "en".
+   Excerpts are never translated: they are shown exactly as in the JSON. */
+var LABELS = {
+  en: {
+    status: {reliable: "Reliable", needs_review: "Needs review", problematic: "Problematic"},
+    count: {
+      supported: ["supported", "supported"], partial: ["partial", "partial"],
+      unsupported: ["unsupported", "unsupported"], contradicted: ["contradicted", "contradicted"],
+      unverifiable: ["unverifiable", "unverifiable"], not_checkable: ["opinion", "opinions"],
+      not_checkable_synthesis: ["synthesis", "syntheses"], not_checkable_mixed: ["opinion or synthesis", "opinions or syntheses"]
+    },
+    outcome: {
+      supported: "Supported", partial: "Partially supported", unsupported: "Not supported by the sources",
+      contradicted: "Contradicted", unverifiable: "Unverifiable · source not readable",
+      not_checkable_opinion: "Model's opinion · not checkable", not_checkable_synthesis: "Model's synthesis · not checkable"
+    },
+    text_label: "Checked text · tap a claim",
+    no_citations: "The original text cited no sources: sources were searched from scratch.",
+    claims_label: "Claims",
+    critical: "critical",
+    indep: ["independent source", "independent sources"],
+    no_indep: "no supporting source",
+    issue: {
+      citation_mismatch: "Cited source says otherwise", number_distorted: "Number distorted",
+      hedge_dropped: "Caveats dropped", overgeneralized: "Overgeneralized", misattributed: "Misattributed",
+      sources_merged: "Sources merged", outdated: "Outdated", source_unreachable: "Source unreachable"
+    },
+    go_to: "go to passage", low_rel: "low reliability",
+    sources: "Sources", cited: ["cited", "cited"], found: ["found by the check", "found by the check"],
+    origins: ["independent origin", "independent origins"],
+    type: {primary: "primary", secondary: "secondary", aggregator: "aggregator", low_quality: "low quality"},
+    undated: "undated",
+    rel: {high: "high", medium: "medium", low: "low"},
+    access: {paywall: "Paywall", not_found: "Page not found", blocked: "Access blocked", timeout: "Timed out", truncated: "Page truncated"},
+    access_status: {partial: "read in part", failed: "not read"},
+    same_origin: "Same origin: ",
+    omissions: "What the text leaves out",
+    follow_ups: "What to look into",
+    footer_mode: {
+      independent_agent: "Automatic check run by an independent agent: it may contain errors.",
+      same_session_refetch: "Automatic check run in the same session, with every page re-read: it may contain errors."
+    },
+    footer_date: "Sources read on ",
+    date: function(y, m, d){ return d + "/" + m + "/" + y; }
+  },
+  it: {
+    status: {reliable: "Affidabile", needs_review: "Da verificare", problematic: "Problematico"},
+    count: {
+      supported: ["supportata", "supportate"], partial: ["parziale", "parziali"],
+      unsupported: ["non supportata", "non supportate"], contradicted: ["smentita", "smentite"],
+      unverifiable: ["non verificabile", "non verificabili"], not_checkable: ["opinione", "opinioni"],
+      not_checkable_synthesis: ["sintesi", "sintesi"], not_checkable_mixed: ["opinione o sintesi", "opinioni o sintesi"]
+    },
+    outcome: {
+      supported: "Supportata", partial: "Parzialmente supportata", unsupported: "Non supportata dalle fonti",
+      contradicted: "Smentita", unverifiable: "Non verificabile · fonte non leggibile",
+      not_checkable_opinion: "Opinione del modello · non verificabile", not_checkable_synthesis: "Sintesi del modello · non verificabile"
+    },
+    text_label: "Testo verificato · tocca un'affermazione",
+    no_citations: "Il testo originale non citava fonti: sono state cercate da zero.",
+    claims_label: "Affermazioni",
+    critical: "critica",
+    indep: ["fonte indipendente", "fonti indipendenti"],
+    no_indep: "nessuna fonte a supporto",
+    issue: {
+      citation_mismatch: "La fonte citata dice altro", number_distorted: "Numero distorto",
+      hedge_dropped: "Cautele omesse", overgeneralized: "Generalizzazione", misattributed: "Attribuzione errata",
+      sources_merged: "Fonti mescolate", outdated: "Dato superato", source_unreachable: "Fonte non raggiungibile"
+    },
+    go_to: "vai al passaggio", low_rel: "affidabilità bassa",
+    sources: "Fonti", cited: ["citata", "citate"], found: ["trovata dalla verifica", "trovate dalla verifica"],
+    origins: ["origine indipendente", "origini indipendenti"],
+    type: {primary: "primaria", secondary: "secondaria", aggregator: "aggregatore", low_quality: "bassa qualità"},
+    undated: "senza data",
+    rel: {high: "alta", medium: "media", low: "bassa"},
+    access: {paywall: "Paywall", not_found: "Pagina non trovata", blocked: "Accesso bloccato", timeout: "Tempo scaduto", truncated: "Pagina troncata"},
+    access_status: {partial: "letta in parte", failed: "non letta"},
+    same_origin: "Stessa origine: ",
+    omissions: "Cosa manca nel testo",
+    follow_ups: "Cosa approfondire",
+    footer_mode: {
+      independent_agent: "Verifica automatica eseguita da un agente indipendente: può contenere errori.",
+      same_session_refetch: "Verifica automatica eseguita nella stessa sessione, rileggendo ogni pagina: può contenere errori."
+    },
+    footer_date: "Fonti lette il ",
+    date: function(y, m, d){ return d + "/" + m + "/" + y; }
+  }
+};
+
+/* ---------------------------------------------------------------- styling maps
+   Color never carries meaning alone: every colored mark also has an icon and a label. */
+var STATUS_STYLE = {
+  reliable:     {icon: "ti-circle-check",   bg: "--bg-success", fg: "--text-success"},
+  needs_review: {icon: "ti-alert-triangle", bg: "--bg-warning", fg: "--text-warning"},
+  problematic:  {icon: "ti-alert-octagon",  bg: "--bg-danger",  fg: "--text-danger"}
+};
+var OUTCOME_STYLE = {
+  supported:     {icon: "ti-circle-check",  fg: "--text-success",   line: "2px solid var(--border-success)"},
+  partial:       {icon: "ti-circle-half-2", fg: "--text-warning",   line: "2px solid var(--border-warning)"},
+  unsupported:   {icon: "ti-circle-minus",  fg: "--text-danger",    line: "2px solid var(--border-danger)"},
+  contradicted:  {icon: "ti-circle-x",      fg: "--text-danger",    line: "2px solid var(--border-danger)"},
+  unverifiable:  {icon: "ti-help-circle",   fg: "--text-secondary", line: "2px dotted var(--border-strong)"},
+  not_checkable: {icon: "ti-message-circle",fg: "--text-muted",     line: "1.5px dashed var(--border-strong)"}
+};
+var RELATION_STYLE = {
+  supports:    {icon: "ti-check",        fg: "--text-success"},
+  qualifies:   {icon: "ti-alert-circle", fg: "--text-warning"},
+  contradicts: {icon: "ti-x",            fg: "--text-danger"}
+};
+var REL_STYLE = {
+  high:   {icon: "ti-shield-check", fg: "--text-success"},
+  medium: {icon: "ti-shield-half",  fg: "--text-warning"},
+  low:    {icon: "ti-shield-x",     fg: "--text-danger"}
+};
+var OMISSION_ICON = {
+  unreported_disagreement: "ti-arrows-split",
+  missing_perspective: "ti-users",
+  missing_context: "ti-puzzle"
+};
+var COUNT_ORDER = ["supported", "partial", "unsupported", "contradicted", "unverifiable", "not_checkable"];
+
+/* ---------------------------------------------------------------- helpers */
+var R = JSON.parse(document.getElementById("fc-data").textContent);
+var lang = (R.meta.language || "en").toLowerCase();
+var L = LABELS[lang] || LABELS[lang.split("-")[0]] || LABELS.en;
+var root = document.getElementById("fc-root");
+
+function el(tag, attrs, children){
+  var e = document.createElement(tag);
+  if (attrs) for (var k in attrs) {
+    if (k === "class") e.className = attrs[k];
+    else if (k === "style") e.setAttribute("style", attrs[k]);
+    else if (k === "text") e.textContent = attrs[k];
+    else e.setAttribute(k, attrs[k]);
+  }
+  (children || []).forEach(function(c){
+    if (c == null) return;
+    e.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+  });
+  return e;
+}
+function icon(name, style){ return el("i", {"class": "ti " + name, style: style || "", "aria-hidden": "true"}); }
+function v(name){ return "var(" + name + ")"; }
+function plural(pair, n){ return n === 1 ? pair[0] : pair[1]; }
+function safeUrl(u){ return /^https?:\/\//i.test(u || "") ? u : "#"; }
+function card(children, extra){ return el("div", {"class": "fc-card" + (extra ? " " + extra : "")}, children); }
+
+var srcById = {}; R.sources.forEach(function(s){ srcById[s.id] = s; });
+var claimById = {}; R.claims.forEach(function(c){ claimById[c.id] = c; });
+var groupById = {}; R.origin_groups.forEach(function(g){ groupById[g.id] = g; });
+
+function outcomeLabel(c){
+  if (c.outcome === "not_checkable") return L.outcome[c.kind === "synthesis" ? "not_checkable_synthesis" : "not_checkable_opinion"];
+  return L.outcome[c.outcome];
+}
+
+/* ---------------------------------------------------------------- 1. verdict */
+(function(){
+  var st = STATUS_STYLE[R.verdict.status];
+  var badge = el("span", {"class": "fc-badge", style: "background:" + v(st.bg) + ";color:" + v(st.fg)},
+    [icon(st.icon), L.status[R.verdict.status]]);
+  var counts = el("div", {"class": "fc-counts"});
+  COUNT_ORDER.forEach(function(k){
+    var n = R.verdict.counts[k];
+    if (!n) return;
+    var os = OUTCOME_STYLE[k], key = k;
+    if (k === "not_checkable") {
+      var kinds = {};
+      R.claims.forEach(function(c){ if (c.outcome === k) kinds[c.kind] = true; });
+      if (kinds.synthesis) key = kinds.opinion ? "not_checkable_mixed" : "not_checkable_synthesis";
+    }
+    counts.appendChild(el("span", null, [icon(os.icon, "color:" + v(os.fg)), " " + n + " " + plural(L.count[key], n)]));
+  });
+  root.appendChild(card([badge, el("p", {"class": "fc-headline", text: R.verdict.headline}), counts]));
+})();
+
+/* ---------------------------------------------------------------- 2. annotated text */
+(function(){
+  var p = el("p", {"class": "fc-text"});
+  R.text.segments.forEach(function(seg){
+    if (!seg.claim_id) { p.appendChild(document.createTextNode(seg.text)); return; }
+    var c = claimById[seg.claim_id];
+    var os = OUTCOME_STYLE[c.outcome];
+    var style = "border-bottom:" + os.line + (c.outcome === "not_checkable" ? ";color:var(--text-secondary)" : "");
+    var span = el("span", {"class": "fc-cl", "data-c": c.id, style: style, role: "button", tabindex: "0",
+                           "aria-label": seg.text + " — " + outcomeLabel(c)}, [seg.text]);
+    p.appendChild(span);
+  });
+  var kids = [el("p", {"class": "fc-lbl", text: L.text_label})];
+  if (R.meta.original_had_citations === false)
+    kids.push(el("p", {"class": "note", style: "white-space:normal;margin-bottom:8px"}, [icon("ti-info-circle"), " " + L.no_citations]));
+  kids.push(p);
+  root.appendChild(card(kids));
+})();
+
+/* ---------------------------------------------------------------- 3. claim cards */
+root.appendChild(el("p", {"class": "fc-lbl", style: "margin:14px 2px 8px", text: L.claims_label}));
+R.claims.forEach(function(c){
+  var os = OUTCOME_STYLE[c.outcome];
+  var muted = c.outcome === "not_checkable";
+  var head = el("div", {"class": "fc-head", role: "button", tabindex: "0", "aria-expanded": "false"}, [
+    icon(os.icon, "color:" + v(os.fg) + ";font-size:18px"),
+    el("span", {"class": "fc-title", style: muted ? "color:var(--text-secondary)" : "", title: c.text, text: c.text}),
+    c.critical ? el("span", {"class": "fc-chip", style: "background:var(--bg-accent);color:var(--text-accent);margin:0",
+                             title: c.critical_reason || "", text: L.critical}) : null,
+    icon("ti-chevron-up", "color:var(--text-muted)")
+  ]);
+  var body = el("div", {"class": "fc-body"}, [
+    el("p", {"class": "fc-out", style: "color:" + v(muted ? "--text-secondary" : os.fg), text: outcomeLabel(c)}),
+    el("p", {"class": "fc-why", text: c.reason})
+  ]);
+  c.evidence.forEach(function(e){
+    var rs = RELATION_STYLE[e.relation];
+    var s = srcById[e.source_id] || {};
+    var low = s.reliability && s.reliability.level === "low";
+    body.appendChild(el("div", {"class": "fc-ev"}, [
+      el("p", null, [icon(rs.icon, "color:" + v(rs.fg) + ";font-style:normal"), " “" + e.excerpt + "”"]),
+      el("a", {href: safeUrl(e.deep_link), target: "_blank", rel: "noopener noreferrer"},
+         [(s.publisher || e.source_id) + " · " + (low ? L.low_rel : L.go_to) + " ", icon("ti-external-link")])
+    ]));
+  });
+  var chips = [];
+  if (!muted && (c.outcome === "supported" || c.critical)) {
+    var n = c.independent_source_count;
+    chips.push(el("span", {"class": "fc-chip", text: n ? n + " " + plural(L.indep, n) : L.no_indep}));
+  }
+  c.issues.forEach(function(i){ chips.push(el("span", {"class": "fc-chip", text: L.issue[i] || i})); });
+  if (chips.length) body.appendChild(el("div", {style: "margin-top:8px"}, chips));
+  var danger = c.outcome === "contradicted" || c.outcome === "unsupported";
+  var cardEl = el("div", {"class": "fc-card fc-claim fc-closed", id: c.id, style: danger ? "border-color:var(--border-danger)" : ""}, [head, body]);
+  root.appendChild(cardEl);
+});
+
+/* ---------------------------------------------------------------- 4. sources */
+(function(){
+  var cited = R.sources.filter(function(s){ return s.cited_in_original; }).length;
+  var found = R.sources.length - cited;
+  var parts = [];
+  if (cited) parts.push(cited + " " + plural(L.cited, cited));
+  if (found) parts.push(found + " " + plural(L.found, found));
+  var ng = R.origin_groups.length;
+  parts.push(ng + " " + plural(L.origins, ng));
+  var c = card([el("p", {"class": "fc-lbl", text: L.sources + " · " + parts.join(", ")})]);
+
+  function sourceRow(s){
+    var meta = " · " + (L.type[s.type] || s.type) + " · " + (s.published_at ? s.published_at.slice(0, 4) : L.undated);
+    var rs = REL_STYLE[s.reliability.level];
+    var row = el("div", {"class": "fc-row"}, [
+      el("span", {title: s.title}, [el("a", {href: safeUrl(s.url), target: "_blank", rel: "noopener noreferrer"}, [s.publisher]),
+                                    el("span", {style: "color:var(--text-muted)", text: meta})]),
+      el("span", {style: "color:" + v(rs.fg) + ";white-space:nowrap", title: s.reliability.reason + " — " + s.reliability.lateral_check},
+         [icon(rs.icon), " " + L.rel[s.reliability.level]])
+    ]);
+    var out = [row];
+    if (s.access.status !== "full") {
+      var txt = (s.access.issue ? (L.access[s.access.issue] || s.access.issue) + " · " : "") + L.access_status[s.access.status];
+      out.push(el("p", {"class": "note"}, [icon("ti-lock"), " " + txt]));
+    }
+    if (s.conflict_of_interest)
+      out.push(el("p", {"class": "note", title: s.conflict_of_interest}, [icon("ti-info-circle"), " " + s.conflict_of_interest]));
+    return out;
+  }
+
+  var blocks = [];
+  R.origin_groups.forEach(function(g){
+    var srcs = g.source_ids.map(function(id){ return srcById[id]; }).filter(Boolean);
+    if (srcs.length === 1) { blocks.push({nodes: sourceRow(srcs[0]), boxed: false}); return; }
+    var box = el("div", {"class": "fc-group"}, [el("p", {"class": "fc-group-lbl", title: g.label}, [icon("ti-link"), " " + L.same_origin + g.label])]);
+    srcs.forEach(function(s, i){
+      var nodes = sourceRow(s);
+      if (i === srcs.length - 1) nodes[0].classList.add("fc-last");
+      nodes.forEach(function(n){ box.appendChild(n); });
+    });
+    blocks.push({nodes: [box], boxed: true});
+  });
+  blocks.forEach(function(b, i){
+    if (i === blocks.length - 1 && !b.boxed) {
+      var hasNote = b.nodes.length > 1;
+      if (!hasNote) b.nodes[0].classList.add("fc-last");
+      else { b.nodes[0].classList.add("fc-last"); b.nodes[b.nodes.length - 1].style.marginBottom = "0"; }
+    }
+    b.nodes.forEach(function(n){ c.appendChild(n); });
+  });
+  root.appendChild(c);
+})();
+
+/* ---------------------------------------------------------------- 5. omissions and follow-ups */
+if (R.omissions.length) {
+  var oc = card([el("p", {"class": "fc-lbl", text: L.omissions})]);
+  R.omissions.forEach(function(o){
+    oc.appendChild(el("p", {"class": "fc-om"}, [icon(OMISSION_ICON[o.type] || "ti-puzzle", "color:var(--text-secondary)"), " " + o.description]));
+  });
+  root.appendChild(oc);
+}
+if (R.follow_ups.length) {
+  var fc = card([el("p", {"class": "fc-lbl", text: L.follow_ups})]);
+  R.follow_ups.forEach(function(f, i){
+    var row = el("div", {"class": "fc-row" + (i === R.follow_ups.length - 1 ? " fc-last" : "") + (f.claim_id ? " fc-fu" : "")},
+      [el("span", {style: "white-space:normal"}, [icon("ti-arrow-right", "color:var(--text-accent)"), " " + f.text])]);
+    if (f.claim_id) { row.setAttribute("data-c", f.claim_id); row.setAttribute("role", "button"); row.setAttribute("tabindex", "0"); }
+    fc.appendChild(row);
+  });
+  root.appendChild(fc);
+}
+
+/* ---------------------------------------------------------------- 6. footer */
+(function(){
+  var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(R.meta.checked_at) || [];
+  var date = m.length ? L.date(m[1], m[2], m[3]) : R.meta.checked_at;
+  root.appendChild(el("p", {"class": "fc-foot", text: L.footer_mode[R.meta.verifier_mode] + " " + L.footer_date + date + "."}));
+})();
+
+/* ---------------------------------------------------------------- interaction
+   Claim cards start collapsed. Tapping a claim in the text (or a follow-up) opens its
+   card and closes the others; tapping a card header toggles it. */
+var cards = Array.prototype.slice.call(document.querySelectorAll(".fc-claim"));
+function setOpen(c, open){
+  c.classList.toggle("fc-closed", !open);
+  c.querySelector(".fc-head").setAttribute("aria-expanded", open ? "true" : "false");
+}
+function openOnly(id){
+  var t = document.getElementById(id);
+  if (!t) return;
+  cards.forEach(function(c){ setOpen(c, c === t); });
+  t.scrollIntoView({behavior: "smooth", block: "nearest"});
+}
+function onActivate(node, fn){
+  node.addEventListener("click", fn);
+  node.addEventListener("keydown", function(ev){ if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); fn(); } });
+}
+cards.forEach(function(c){
+  onActivate(c.querySelector(".fc-head"), function(){ setOpen(c, c.classList.contains("fc-closed")); });
+});
+Array.prototype.forEach.call(document.querySelectorAll("[data-c]"), function(s){
+  if (s.classList.contains("fc-claim")) return;
+  onActivate(s, function(){ openOnly(s.getAttribute("data-c")); });
+});
+document.title = L.status[R.verdict.status] + " · Fact-check";
+})();
+</script>
+</body>
+</html>

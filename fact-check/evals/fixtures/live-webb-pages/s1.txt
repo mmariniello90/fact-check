@@ -1,0 +1,1 @@
+[Fetch on 2026-11-14: https://blogs.nasa.gov/webb/2021/12/page/2 returned 302 redirect to https://science.nasa.gov/blogs/webb/ ; the redirect target lists posts from 2024-2026 only, no December 2021 posts. Original content not available.]

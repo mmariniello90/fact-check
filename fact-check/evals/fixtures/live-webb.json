@@ -1,0 +1,371 @@
+{
+  "schema_version": "1.0",
+  "meta": {
+    "checked_at": "2026-11-14T07:27:36+01:00",
+    "language": "en",
+    "scope": "full_response",
+    "verifier_mode": "independent_agent",
+    "original_had_citations": true
+  },
+  "verdict": {
+    "status": "needs_review",
+    "headline": "Launch date, rocket and site check out; the 6,200 kg mass isn't in the cited pages and Northrop Grumman says 6,500 kg.",
+    "basis": [
+      "c4"
+    ],
+    "counts": {
+      "supported": 3,
+      "partial": 1,
+      "unsupported": 0,
+      "contradicted": 0,
+      "unverifiable": 0,
+      "not_checkable": 1
+    }
+  },
+  "text": {
+    "original": "The James Webb Space Telescope launched on 25 December 2021 on an Ariane 5 rocket from Europe's Spaceport in Kourou, French Guiana. It had a launch mass of about 6,200 kg. It is the most important telescope of its generation.",
+    "segments": [
+      {
+        "text": "The James Webb Space Telescope launched on 25 December 2021",
+        "claim_id": "c1"
+      },
+      {
+        "text": " ",
+        "claim_id": null
+      },
+      {
+        "text": "on an Ariane 5 rocket",
+        "claim_id": "c2"
+      },
+      {
+        "text": " ",
+        "claim_id": null
+      },
+      {
+        "text": "from Europe's Spaceport in Kourou, French Guiana",
+        "claim_id": "c3"
+      },
+      {
+        "text": ". ",
+        "claim_id": null
+      },
+      {
+        "text": "It had a launch mass of about 6,200 kg",
+        "claim_id": "c4"
+      },
+      {
+        "text": ". ",
+        "claim_id": null
+      },
+      {
+        "text": "It is the most important telescope of its generation.",
+        "claim_id": "c5"
+      }
+    ]
+  },
+  "claims": [
+    {
+      "id": "c1",
+      "text": "The James Webb Space Telescope launched on 25 December 2021",
+      "kind": "date",
+      "critical": false,
+      "critical_reason": null,
+      "outcome": "supported",
+      "reason": "collectSPACE and ESA both give 25 December 2021 as the launch date.",
+      "issues": [],
+      "cited_source_ids": [
+        "s1",
+        "s2"
+      ],
+      "evidence": [
+        {
+          "source_id": "s2",
+          "relation": "supports",
+          "excerpt": "On Saturday (Dec. 25), an Ariane 5 rocket carrying the intricately-folded Webb lifted off",
+          "deep_link": "https://www.collectspace.com/news/news-122521a-james-webb-space-telescope-launch.html#:~:text=On%20Saturday%20%28Dec.%2025%29%2C%20an%20Ariane%205%20rocket%20carrying%20the%20intricately-folded%20Webb%20lifted%20off"
+        },
+        {
+          "source_id": "s3",
+          "relation": "supports",
+          "excerpt": "The telescope launched on 25 December 2021",
+          "deep_link": "https://www.esa.int/Science_Exploration/Space_Science/Webb/Webb_factsheet#:~:text=The%20telescope%20launched%20on%2025%20December%202021"
+        }
+      ],
+      "independent_source_count": 2
+    },
+    {
+      "id": "c2",
+      "text": "on an Ariane 5 rocket",
+      "kind": "fact",
+      "critical": false,
+      "critical_reason": null,
+      "outcome": "supported",
+      "reason": "The cited collectSPACE article and ESA both name an Ariane 5 as the launcher.",
+      "issues": [],
+      "cited_source_ids": [
+        "s1",
+        "s2"
+      ],
+      "evidence": [
+        {
+          "source_id": "s2",
+          "relation": "supports",
+          "excerpt": "an Ariane 5 rocket carrying the intricately-folded Webb lifted off",
+          "deep_link": "https://www.collectspace.com/news/news-122521a-james-webb-space-telescope-launch.html#:~:text=an%20Ariane%205%20rocket%20carrying%20the%20intricately-folded%20Webb%20lifted%20off"
+        },
+        {
+          "source_id": "s3",
+          "relation": "supports",
+          "excerpt": "on an Ariane 5 ECA rocket from Europe's Spaceport in French Guiana",
+          "deep_link": "https://www.esa.int/Science_Exploration/Space_Science/Webb/Webb_factsheet#:~:text=on%20an%20Ariane%205%20ECA%20rocket%20from%20Europe%27s%20Spaceport%20in%20French%20Guiana"
+        }
+      ],
+      "independent_source_count": 2
+    },
+    {
+      "id": "c3",
+      "text": "from Europe's Spaceport in Kourou, French Guiana",
+      "kind": "fact",
+      "critical": false,
+      "critical_reason": null,
+      "outcome": "supported",
+      "reason": "collectSPACE places the launch at Europe's Spaceport near Kourou, French Guiana; ESA agrees.",
+      "issues": [],
+      "cited_source_ids": [
+        "s1",
+        "s2"
+      ],
+      "evidence": [
+        {
+          "source_id": "s2",
+          "relation": "supports",
+          "excerpt": "Europe's Spaceport located near Kourou, French Guiana",
+          "deep_link": "https://www.collectspace.com/news/news-122521a-james-webb-space-telescope-launch.html#:~:text=Europe%27s%20Spaceport%20located%20near%20Kourou%2C%20French%20Guiana"
+        },
+        {
+          "source_id": "s3",
+          "relation": "supports",
+          "excerpt": "from Europe's Spaceport in French Guiana",
+          "deep_link": "https://www.esa.int/Science_Exploration/Space_Science/Webb/Webb_factsheet#:~:text=from%20Europe%27s%20Spaceport%20in%20French%20Guiana"
+        }
+      ],
+      "independent_source_count": 2
+    },
+    {
+      "id": "c4",
+      "text": "It had a launch mass of about 6,200 kg",
+      "kind": "number",
+      "critical": true,
+      "critical_reason": "Specific figure; sources disagree on it.",
+      "outcome": "partial",
+      "reason": "NASA and ESA give about 6,200 kg, but the cited pages don't hold it and Northrop Grumman says about 6,500 kg.",
+      "issues": [
+        "citation_mismatch"
+      ],
+      "cited_source_ids": [
+        "s1",
+        "s2"
+      ],
+      "evidence": [
+        {
+          "source_id": "s3",
+          "relation": "supports",
+          "excerpt": "Launch mass: 6200 kg, including observatory, on-orbit consumables and launch vehicle adaptor",
+          "deep_link": "https://www.esa.int/Science_Exploration/Space_Science/Webb/Webb_factsheet#:~:text=Launch%20mass%3A%206200%20kg%2C%20including%20observatory%2C%20on-orbit%20consumables%20and%20launch%20vehicle%20adaptor"
+        },
+        {
+          "source_id": "s4",
+          "relation": "supports",
+          "excerpt": "Total payload mass: about 6,200 kilograms (about 13,650 pounds on Earth)",
+          "deep_link": "https://science.nasa.gov/mission/webb/science-overview/science-explainers/telescope-overview#:~:text=Total%20payload%20mass%3A%20about%206%2C200%20kilograms%20%28about%2013%2C650%20pounds%20on%20Earth%29"
+        },
+        {
+          "source_id": "s5",
+          "relation": "contradicts",
+          "excerpt": "Approximately 6,500 kg",
+          "deep_link": "https://northropgrumman.com/space/jwst-technical-details/#:~:text=Approximately%206%2C500%20kg"
+        }
+      ],
+      "independent_source_count": 2
+    },
+    {
+      "id": "c5",
+      "text": "It is the most important telescope of its generation.",
+      "kind": "opinion",
+      "critical": false,
+      "critical_reason": null,
+      "outcome": "not_checkable",
+      "reason": "A value judgement by the author, not a checkable fact.",
+      "issues": [],
+      "cited_source_ids": [],
+      "evidence": [],
+      "independent_source_count": 0
+    }
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "url": "https://blogs.nasa.gov/webb/2021/12/page/2",
+      "title": "Webb blog, December 2021 archive (page 2)",
+      "publisher": "NASA",
+      "author": null,
+      "published_at": "2021-12",
+      "cited_in_original": true,
+      "access": {
+        "status": "failed",
+        "issue": "not_found"
+      },
+      "type": "primary",
+      "reliability": {
+        "level": "high",
+        "reason": "Official NASA mission blog, but the archived page no longer exists.",
+        "lateral_check": "NASA leads Webb with ESA and CSA; NASA contract notices and press confirm its mission role."
+      },
+      "conflict_of_interest": "NASA runs the mission it reports on.",
+      "origin_group_id": "g1"
+    },
+    {
+      "id": "s2",
+      "url": "https://www.collectspace.com/news/news-122521a-james-webb-space-telescope-launch.html",
+      "title": "NASA's James Webb Space Telescope launches on mission to see the first stars",
+      "publisher": "collectSPACE",
+      "author": null,
+      "published_at": "2021-12-25",
+      "cited_in_original": true,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "secondary",
+      "reliability": {
+        "level": "medium",
+        "reason": "Long-running specialist space-news site; reports on the launch, no byline on the page.",
+        "lateral_check": "Wikipedia: founded 1999 by Robert Pearlman, who also writes for Space.com; known for space-history scoops."
+      },
+      "conflict_of_interest": null,
+      "origin_group_id": "g2"
+    },
+    {
+      "id": "s3",
+      "url": "https://www.esa.int/Science_Exploration/Space_Science/Webb/Webb_factsheet",
+      "title": "Webb factsheet",
+      "publisher": "European Space Agency (ESA)",
+      "author": null,
+      "published_at": "2003-12-31",
+      "cited_in_original": false,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "primary",
+      "reliability": {
+        "level": "high",
+        "reason": "Official fact sheet of a mission partner; stated date 2003 but content updated after launch.",
+        "lateral_check": "ESA is a formal Webb partner (with NASA and CSA) and supplied the Ariane 5 launch, per NASA and Northrop pages."
+      },
+      "conflict_of_interest": "ESA is a mission partner and provided the launcher.",
+      "origin_group_id": "g3"
+    },
+    {
+      "id": "s4",
+      "url": "https://science.nasa.gov/mission/webb/science-overview/science-explainers/telescope-overview",
+      "title": "Webb Telescope Overview",
+      "publisher": "NASA",
+      "author": null,
+      "published_at": null,
+      "cited_in_original": false,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "primary",
+      "reliability": {
+        "level": "high",
+        "reason": "NASA's own technical overview of the observatory; undated.",
+        "lateral_check": "NASA leads Webb with ESA and CSA; NASA contract notices and press confirm its mission role."
+      },
+      "conflict_of_interest": "NASA runs the mission it reports on.",
+      "origin_group_id": "g1"
+    },
+    {
+      "id": "s5",
+      "url": "https://northropgrumman.com/space/jwst-technical-details/",
+      "title": "Technical Details for the James Webb Space Telescope",
+      "publisher": "Northrop Grumman",
+      "author": null,
+      "published_at": null,
+      "cited_in_original": false,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "primary",
+      "reliability": {
+        "level": "medium",
+        "reason": "Prime contractor's spec page; undated, figure may predate final build.",
+        "lateral_check": "NASA and trade press describe Northrop Grumman as Webb's prime contractor."
+      },
+      "conflict_of_interest": "Built the telescope and promotes it commercially.",
+      "origin_group_id": "g4"
+    }
+  ],
+  "origin_groups": [
+    {
+      "id": "g1",
+      "label": "NASA official pages",
+      "source_ids": [
+        "s1",
+        "s4"
+      ]
+    },
+    {
+      "id": "g2",
+      "label": "collectSPACE launch report",
+      "source_ids": [
+        "s2"
+      ]
+    },
+    {
+      "id": "g3",
+      "label": "ESA Webb factsheet",
+      "source_ids": [
+        "s3"
+      ]
+    },
+    {
+      "id": "g4",
+      "label": "Northrop Grumman technical details",
+      "source_ids": [
+        "s5"
+      ]
+    }
+  ],
+  "omissions": [
+    {
+      "type": "unreported_disagreement",
+      "description": "Published launch-mass figures differ: NASA and ESA say about 6,200 kg, Northrop Grumman about 6,500 kg.",
+      "source_ids": [
+        "s3",
+        "s4",
+        "s5"
+      ]
+    },
+    {
+      "type": "missing_context",
+      "description": "ESA's 6,200 kg includes on-orbit consumables and the launch vehicle adaptor, not the telescope alone.",
+      "source_ids": [
+        "s3"
+      ]
+    }
+  ],
+  "follow_ups": [
+    {
+      "text": "Cite NASA's Webb overview or ESA's factsheet for the launch mass instead of the current links.",
+      "claim_id": "c4"
+    },
+    {
+      "text": "Replace the dead NASA blog link with the collectSPACE article or ESA's factsheet.",
+      "claim_id": null
+    }
+  ]
+}

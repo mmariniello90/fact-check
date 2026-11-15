@@ -1,0 +1,248 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/fact-check/report.schema.json",
+  "title": "Fact-check report",
+  "description": "Contract between the analysis (produced by the verifier) and the HTML report template. The JSON must validate against this schema AND satisfy every rule in x-invariants, which scripts/render.py checks before rendering.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "meta", "verdict", "text", "claims", "sources", "origin_groups", "omissions", "follow_ups"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checked_at", "language", "scope", "verifier_mode", "original_had_citations"],
+      "properties": {
+        "checked_at": { "type": "string", "format": "date-time", "description": "When the check ran; sources were read at this time." },
+        "language": { "type": "string", "pattern": "^[a-z]{2}(-[A-Z]{2})?$", "description": "Report language, same as the user's (e.g. it). Drives UI labels and all generated text." },
+        "scope": { "enum": ["selection", "full_response"], "description": "selection = passage quoted by the user; full_response = whole previous answer." },
+        "verifier_mode": { "enum": ["independent_agent", "same_session_refetch"], "description": "independent_agent = separate agent with no conversation context; same_session_refetch = same session, every page re-fetched. Shown in the report footer." },
+        "original_had_citations": { "type": "boolean", "description": "false if the original text cited no sources and the verifier searched for new ones." }
+      }
+    },
+
+    "verdict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "headline", "basis", "counts"],
+      "properties": {
+        "status": { "enum": ["reliable", "needs_review", "problematic"], "description": "Must equal the status recomputed by rule V1 in x-invariants." },
+        "headline": { "type": "string", "minLength": 10, "maxLength": 140, "description": "One plain-language sentence explaining the verdict, in meta.language." },
+        "basis": { "type": "array", "items": { "$ref": "#/$defs/claimId" }, "uniqueItems": true, "description": "Claims that triggered the verdict rule. Empty only when status = reliable." },
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["supported", "partial", "unsupported", "contradicted", "unverifiable", "not_checkable"],
+          "properties": {
+            "supported": { "type": "integer", "minimum": 0 },
+            "partial": { "type": "integer", "minimum": 0 },
+            "unsupported": { "type": "integer", "minimum": 0 },
+            "contradicted": { "type": "integer", "minimum": 0 },
+            "unverifiable": { "type": "integer", "minimum": 0 },
+            "not_checkable": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+
+    "text": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["original", "segments"],
+      "properties": {
+        "original": { "type": "string", "minLength": 1, "description": "The checked text, copied verbatim." },
+        "segments": {
+          "type": "array",
+          "minItems": 1,
+          "description": "The text split in order. Concatenating every segment's text must reproduce original exactly. No numeric offsets: models count characters badly.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["text", "claim_id"],
+            "properties": {
+              "text": { "type": "string", "minLength": 1 },
+              "claim_id": { "oneOf": [{ "$ref": "#/$defs/claimId" }, { "type": "null" }], "description": "null = connecting text, not annotated." }
+            }
+          }
+        }
+      }
+    },
+
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "text", "kind", "critical", "critical_reason", "outcome", "reason", "issues", "cited_source_ids", "evidence", "independent_source_count"],
+        "properties": {
+          "id": { "$ref": "#/$defs/claimId" },
+          "text": { "type": "string", "minLength": 1, "description": "Identical to the text of its segment." },
+          "kind": { "enum": ["fact", "number", "date", "quote", "synthesis", "opinion"], "description": "synthesis and opinion are the model's own content and cannot be checked against a source." },
+          "critical": { "type": "boolean", "description": "true if the user would base a decision on it, or if it is a number or a surprising claim." },
+          "critical_reason": { "type": ["string", "null"], "maxLength": 100, "description": "Required when critical = true, otherwise null." },
+          "outcome": { "enum": ["supported", "partial", "unsupported", "contradicted", "unverifiable", "not_checkable"] },
+          "reason": { "type": "string", "minLength": 5, "maxLength": 140, "description": "Why it got this outcome, in one line, in meta.language." },
+          "issues": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "$ref": "#/$defs/issue" },
+            "description": "Typical errors found. Empty when supported or not_checkable."
+          },
+          "cited_source_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/sourceId" }, "description": "Sources the original answer attached to this claim." },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["source_id", "relation", "excerpt", "deep_link"],
+              "properties": {
+                "source_id": { "$ref": "#/$defs/sourceId" },
+                "relation": { "enum": ["supports", "qualifies", "contradicts"], "description": "qualifies = the source confirms only in part, or with caveats the text dropped." },
+                "excerpt": { "type": "string", "minLength": 3, "maxLength": 120, "description": "Passage copied verbatim from the source, max 15 words, in the SOURCE's language: never translated." },
+                "deep_link": { "type": "string", "format": "uri", "pattern": "#:~:text=", "description": "Source URL with a text fragment pointing at the excerpt." }
+              }
+            }
+          },
+          "independent_source_count": { "type": "integer", "minimum": 0, "description": "Number of distinct origin groups among the sources of evidence with relation = supports." }
+        }
+      }
+    },
+
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "url", "title", "publisher", "author", "published_at", "cited_in_original", "access", "type", "reliability", "conflict_of_interest", "origin_group_id"],
+        "properties": {
+          "id": { "$ref": "#/$defs/sourceId" },
+          "url": { "type": "string", "format": "uri" },
+          "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "publisher": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "author": { "type": ["string", "null"], "maxLength": 80 },
+          "published_at": { "type": ["string", "null"], "pattern": "^\\d{4}(-\\d{2}(-\\d{2})?)?$", "description": "YYYY, YYYY-MM or YYYY-MM-DD; null if the page is undated." },
+          "cited_in_original": { "type": "boolean", "description": "false = found by the verifier during corroboration." },
+          "access": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["status", "issue"],
+            "properties": {
+              "status": { "enum": ["full", "partial", "failed"] },
+              "issue": { "enum": [null, "paywall", "not_found", "blocked", "timeout", "truncated"] }
+            }
+          },
+          "type": { "enum": ["primary", "secondary", "aggregator", "low_quality"], "description": "primary = original data, study or document; secondary = reports on it; aggregator = collects third-party content; low_quality = SEO or generated content, or no verifiable author." },
+          "reliability": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["level", "reason", "lateral_check"],
+            "properties": {
+              "level": { "enum": ["high", "medium", "low"] },
+              "reason": { "type": "string", "minLength": 5, "maxLength": 120 },
+              "lateral_check": { "type": "string", "minLength": 5, "maxLength": 140, "description": "What at least one source outside the page says about the publisher or author." }
+            }
+          },
+          "conflict_of_interest": { "type": ["string", "null"], "maxLength": 120 },
+          "origin_group_id": { "$ref": "#/$defs/groupId" }
+        }
+      }
+    },
+
+    "origin_groups": {
+      "type": "array",
+      "description": "Every source belongs to exactly one group. An original, independent source is a group on its own; sources repeating the same origin (e.g. the same press release) share a group.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "source_ids"],
+        "properties": {
+          "id": { "$ref": "#/$defs/groupId" },
+          "label": { "type": "string", "minLength": 3, "maxLength": 100, "description": "The shared origin, e.g. 'Press release of 13/03/2023'." },
+          "source_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/sourceId" } }
+        }
+      }
+    },
+
+    "omissions": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "description", "source_ids"],
+        "properties": {
+          "type": { "enum": ["unreported_disagreement", "missing_perspective", "missing_context"] },
+          "description": { "type": "string", "minLength": 10, "maxLength": 160 },
+          "source_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/sourceId" } }
+        }
+      }
+    },
+
+    "follow_ups": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["text", "claim_id"],
+        "properties": {
+          "text": { "type": "string", "minLength": 10, "maxLength": 120, "description": "One concrete action, verb first, in meta.language." },
+          "claim_id": { "oneOf": [{ "$ref": "#/$defs/claimId" }, { "type": "null" }] }
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "claimId": { "type": "string", "pattern": "^c[0-9]+$" },
+    "sourceId": { "type": "string", "pattern": "^s[0-9]+$" },
+    "groupId": { "type": "string", "pattern": "^g[0-9]+$" },
+    "issue": {
+      "enum": ["citation_mismatch", "number_distorted", "hedge_dropped", "overgeneralized", "misattributed", "sources_merged", "outdated", "source_unreachable"],
+      "description": "citation_mismatch = the cited source does not contain the claim; number_distorted = rounding, unit or year changed; hedge_dropped = caveats lost; overgeneralized = a specific case turned into a rule; misattributed = attributed to the wrong author; sources_merged = combines two sources into a claim neither supports alone; outdated = old figure presented as current; source_unreachable = source could not be read."
+    }
+  },
+
+  "x-invariants": {
+    "description": "Rules JSON Schema cannot express. scripts/render.py checks all of them; if one fails, the verifier fixes the JSON and retries. Never render a JSON that breaks them.",
+    "text": [
+      "T1. Concatenating text.segments[].text reproduces text.original exactly, character by character.",
+      "T2. Every claim appears in exactly one segment, and that segment's text equals claims[].text.",
+      "T3. Every claim_id in segments, verdict.basis and follow_ups points to an existing claim."
+    ],
+    "claims": [
+      "C1. Claim ids are unique and numbered in order of appearance (c1, c2, ...).",
+      "C2. kind in {synthesis, opinion} <=> outcome = not_checkable. In that case evidence, issues and cited_source_ids are empty.",
+      "C3. critical = true => critical_reason is not null; critical = false => critical_reason = null.",
+      "C4. outcome = supported => at least one evidence with relation = supports, none with relation = contradicts, issues empty.",
+      "C5. outcome = partial => at least one evidence with relation = qualifies, or issues not empty.",
+      "C6. outcome = contradicted => at least one evidence with relation = contradicts.",
+      "C7. outcome = unsupported => no evidence with relation = supports.",
+      "C8. outcome = unverifiable => every source in cited_source_ids has access.status = failed, and issues contains source_unreachable.",
+      "C9. independent_source_count = number of distinct origin_group_id among sources of evidence with relation = supports.",
+      "C10. Every excerpt has at most 15 words and appears verbatim on the source page.",
+      "C11. deep_link starts with the url of the source named in source_id."
+    ],
+    "sources": [
+      "S1. Source ids are unique; every source_id referenced elsewhere exists.",
+      "S2. Every source appears in exactly one origin_group, and origin_group_id matches that group.",
+      "S3. access.status = full <=> access.issue = null.",
+      "S4. Every source is used by at least one claim (in cited_source_ids or in evidence)."
+    ],
+    "verdict": [
+      "V0. counts matches the tally of outcomes in claims.",
+      "V1. status is recomputed with the rules below, evaluated in order; it must equal the declared status.",
+      "    1. problematic: at least one critical claim with outcome in {unsupported, contradicted}, OR at least one critical claim whose supporting evidence (relation = supports) comes only from sources with reliability.level = low.",
+      "    2. reliable: at least one checkable claim exists; every critical claim has outcome = supported and independent_source_count >= 2; no claim has outcome = contradicted; no supported claim relies only on low-reliability sources.",
+      "    3. needs_review: every other case (including: no checkable claim).",
+      "V2. verdict.basis lists the claims that triggered the applied rule; it is empty only when status = reliable."
+    ],
+    "render": [
+      "R1. The template shows by default: verdict, annotated text, sources, omissions, follow-ups. Claim cards start collapsed.",
+      "R2. Visible labels are translated into meta.language through a label dictionary in the template (e.g. needs_review -> 'Da verificare' in Italian). Excerpts are never translated."
+    ]
+  }
+}

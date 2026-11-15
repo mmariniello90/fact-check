@@ -1,0 +1,190 @@
+{
+  "schema_version": "1.0",
+  "meta": {
+    "checked_at": "2026-11-14T08:05:00+01:00",
+    "language": "it",
+    "scope": "selection",
+    "verifier_mode": "same_session_refetch",
+    "original_had_citations": true
+  },
+  "verdict": {
+    "status": "problematic",
+    "headline": "Il dato principale è sbagliato: la fonte citata indica il 20,5%, non il 18%.",
+    "basis": [
+      "c1"
+    ],
+    "counts": {
+      "supported": 1,
+      "partial": 0,
+      "unsupported": 0,
+      "contradicted": 1,
+      "unverifiable": 0,
+      "not_checkable": 1
+    }
+  },
+  "text": {
+    "original": "Nel 2024 la disoccupazione giovanile in Italia è scesa al 18%, il valore più basso dal 2007. Un segnale che il mercato del lavoro si è ripreso.",
+    "segments": [
+      {
+        "text": "Nel 2024 la disoccupazione giovanile in Italia è scesa al 18%,",
+        "claim_id": "c1"
+      },
+      {
+        "text": " ",
+        "claim_id": null
+      },
+      {
+        "text": "il valore più basso dal 2007.",
+        "claim_id": "c2"
+      },
+      {
+        "text": " ",
+        "claim_id": null
+      },
+      {
+        "text": "Un segnale che il mercato del lavoro si è ripreso.",
+        "claim_id": "c3"
+      }
+    ]
+  },
+  "claims": [
+    {
+      "id": "c1",
+      "text": "Nel 2024 la disoccupazione giovanile in Italia è scesa al 18%,",
+      "kind": "number",
+      "critical": true,
+      "critical_reason": "È il numero su cui si regge tutta la risposta.",
+      "outcome": "contradicted",
+      "reason": "La fonte citata riporta il 20,5% per i 15-24 anni; il 18% non compare.",
+      "issues": [
+        "number_distorted"
+      ],
+      "cited_source_ids": [
+        "s1"
+      ],
+      "evidence": [
+        {
+          "source_id": "s1",
+          "relation": "contradicts",
+          "excerpt": "il tasso di disoccupazione giovanile (15-24 anni) si attesta al 20,5%",
+          "deep_link": "https://ente-statistico.example.it/comunicato-lavoro-2024#:~:text=il%20tasso%20di%20disoccupazione%20giovanile"
+        }
+      ],
+      "independent_source_count": 0
+    },
+    {
+      "id": "c2",
+      "text": "il valore più basso dal 2007.",
+      "kind": "fact",
+      "critical": false,
+      "critical_reason": null,
+      "outcome": "supported",
+      "reason": "Sia l'ente sia il quotidiano indicano il minimo dal 2007.",
+      "issues": [],
+      "cited_source_ids": [
+        "s1"
+      ],
+      "evidence": [
+        {
+          "source_id": "s1",
+          "relation": "supports",
+          "excerpt": "il livello più basso dal 2007",
+          "deep_link": "https://ente-statistico.example.it/comunicato-lavoro-2024#:~:text=il%20livello%20pi%C3%B9%20basso%20dal%202007"
+        },
+        {
+          "source_id": "s2",
+          "relation": "supports",
+          "excerpt": "mai così bassa dal 2007",
+          "deep_link": "https://quotidiano.example.it/economia/disoccupazione-giovani#:~:text=mai%20cos%C3%AC%20bassa%20dal%202007"
+        }
+      ],
+      "independent_source_count": 1
+    },
+    {
+      "id": "c3",
+      "text": "Un segnale che il mercato del lavoro si è ripreso.",
+      "kind": "synthesis",
+      "critical": false,
+      "critical_reason": null,
+      "outcome": "not_checkable",
+      "reason": "È un'interpretazione del modello, non un dato attribuito a una fonte.",
+      "issues": [],
+      "cited_source_ids": [],
+      "evidence": [],
+      "independent_source_count": 0
+    }
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "url": "https://ente-statistico.example.it/comunicato-lavoro-2024",
+      "title": "Occupati e disoccupati – anno 2024",
+      "publisher": "Ente statistico nazionale",
+      "author": null,
+      "published_at": "2025-03-04",
+      "cited_in_original": true,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "primary",
+      "reliability": {
+        "level": "high",
+        "reason": "Dato ufficiale con nota metodologica.",
+        "lateral_check": "Ente pubblico di statistica, citato come riferimento da Banca d'Italia."
+      },
+      "conflict_of_interest": null,
+      "origin_group_id": "g1"
+    },
+    {
+      "id": "s2",
+      "url": "https://quotidiano.example.it/economia/disoccupazione-giovani",
+      "title": "Giovani, la disoccupazione ai minimi dal 2007",
+      "publisher": "Quotidiano nazionale",
+      "author": "Redazione economia",
+      "published_at": "2025-03-04",
+      "cited_in_original": false,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "secondary",
+      "reliability": {
+        "level": "medium",
+        "reason": "Riprende il comunicato dell'ente aggiungendo commenti.",
+        "lateral_check": "Testata nazionale con direttore responsabile e policy di rettifica."
+      },
+      "conflict_of_interest": null,
+      "origin_group_id": "g1"
+    }
+  ],
+  "origin_groups": [
+    {
+      "id": "g1",
+      "label": "Comunicato dell'ente statistico del 04/03/2025",
+      "source_ids": [
+        "s1",
+        "s2"
+      ]
+    }
+  ],
+  "omissions": [
+    {
+      "type": "missing_context",
+      "description": "Il calo è in parte dovuto alla riduzione dei giovani attivi, come nota l'ente.",
+      "source_ids": [
+        "s1"
+      ]
+    }
+  ],
+  "follow_ups": [
+    {
+      "text": "Correggi il dato al 20,5% citando il comunicato dell'ente",
+      "claim_id": "c1"
+    },
+    {
+      "text": "Verifica il tasso di inattività giovanile nello stesso comunicato",
+      "claim_id": null
+    }
+  ]
+}
