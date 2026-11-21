@@ -5,11 +5,11 @@ Valid cases (expected verdict in the file name's comment below):
   case1-reliable.json       independent primary sources            -> reliable
   case2-number-distorted.json  number changed vs cited source      -> problematic, number_distorted
   case3-same-press-release.json three articles, one press release  -> needs_review, 1 origin group
-Invalid cases, one per invariant family, derived from example.json:
-  invalid/T1-segments.json, invalid/C3-critical-reason.json,
-  invalid/S3-access.json,   invalid/V1-status.json
+  case4-unsupported-minor.json  case1 with a minor claim unsupported -> needs_review
+Invalid cases, each breaking one rule (the file name starts with the rule id):
+  derived from example.json, case1 and live-webb.json; see the bottom of this file.
 
-Run:  python evals/build_fixtures.py   (writes into evals/fixtures/)
+Run:  python3 evals/build_fixtures.py   (writes into evals/fixtures/)
 """
 import copy
 import json
@@ -220,5 +220,72 @@ dump("invalid/S3-access.json", s)
 v = copy.deepcopy(example)  # V1: declares reliable although c3 is contradicted
 v["verdict"]["status"] = "reliable"
 dump("invalid/V1-status.json", v)
+
+# ---------------------------------------------------------------- case 4 and more invalid cases
+def recount(r):
+    r["verdict"]["counts"] = counts(r["claims"])
+    return r
+
+c4 = copy.deepcopy(case1)  # a minor claim nobody supports: must block "reliable"
+c4["claims"][0].update(outcome="unsupported", issues=["citation_mismatch"], evidence=[],
+                       independent_source_count=0,
+                       reason="The report gives no opening date; none of the sources does.")
+c4["verdict"].update(status="needs_review", basis=["c1"],
+                     headline="The ridership figure holds up, but the opening date is not in any source.")
+dump("case4-unsupported-minor.json", recount(c4))
+
+bad = copy.deepcopy(c4)  # V1: the old rule called this reliable (unsupported minor claim)
+bad["verdict"].update(status="reliable", basis=[])
+dump("invalid/V1-unsupported-minor.json", bad)
+
+bad = copy.deepcopy(c4)  # V1: no claim is supported at all, none critical
+bad["claims"] = [bad["claims"][0], bad["claims"][2]]
+bad["text"]["segments"] = [{"text": "The Riverside tram line opened on 4 March 2024", "claim_id": "c1"},
+                           {"text": " and carried 2.1 million passengers in its first year. ", "claim_id": None},
+                           {"text": "It is a model other mid-sized cities should follow.", "claim_id": "c2"}]
+bad["claims"][1]["id"] = "c2"
+bad["sources"], bad["origin_groups"] = bad["sources"][:1], bad["origin_groups"][:1]
+bad["follow_ups"] = []
+bad["verdict"].update(status="reliable", basis=[])
+dump("invalid/V1-nothing-supported.json", recount(bad))
+
+bad = copy.deepcopy(case1)  # C12: a number claim marked not critical
+bad["claims"][1].update(critical=False, critical_reason=None)
+dump("invalid/C12-number-not-critical.json", bad)
+
+bad = copy.deepcopy(case1)  # C12: an opinion marked critical
+bad["claims"][2].update(critical=True, critical_reason="Recommendation the reader may act on.")
+dump("invalid/C12-opinion-critical.json", bad)
+
+bad = copy.deepcopy(case1)  # C11: the source url carries an #anchor before the text fragment
+bad["sources"][0]["url"] = U1 + "#ridership"
+for c in bad["claims"]:
+    for e in c["evidence"]:
+        if e["source_id"] == "s1":
+            e["deep_link"] = e["deep_link"].replace(U1, U1 + "#ridership")
+dump("invalid/C11-anchor.json", bad)
+
+bad = copy.deepcopy(case1)  # C9: independent_source_count does not match the groups
+bad["claims"][1]["independent_source_count"] = 3
+dump("invalid/C9-count.json", bad)
+
+bad = copy.deepcopy(case1)  # S4: a source no claim uses
+bad["sources"].append(src("s3", "https://unused.example.com/page", "Unused page", "Unused", "secondary",
+                          "medium", "Never cited.", "Nothing known about it.", "g3"))
+bad["origin_groups"].append({"id": "g3", "label": "Unused page", "source_ids": ["s3"]})
+dump("invalid/S4-unused-source.json", bad)
+
+bad = copy.deepcopy(case1)  # V0: counts do not match the claims
+bad["verdict"]["counts"]["supported"] = 1
+dump("invalid/V0-counts.json", bad)
+
+live = json.loads((HERE / "live-webb.json").read_text(encoding="utf-8"))
+bad = copy.deepcopy(live)  # C10 (with --pages): an excerpt that is not on the page
+for c in bad["claims"]:
+    if c["evidence"]:
+        e = c["evidence"][0]
+        e["excerpt"] = "words that never appeared on " + e["excerpt"]
+        break
+dump("invalid/C10-not-on-page.json", bad)
 
 print("fixtures written to", HERE)

@@ -37,6 +37,14 @@ Ground rules:
   conversation: the point is to see what the page says today. One exception: a full
   page fetch you made yourself earlier today, during a previous fact-check in the same
   session, counts as read; search-result snippets never do.
+- **Ask the fetch tool for the page's own words.** Some fetch tools (WebFetch in Claude
+  Code among them) pass the page through a model that summarises it. Prompt it to return
+  the main text verbatim ("Return the full article text exactly as written, no summary"),
+  and treat anything that reads like a summary as not yet read: fetch again, or open the
+  page in the browser.
+- **Save what you read.** Write the text each fetch returned to `pages/<source_id>.txt`
+  in your work directory (for a page you could not read, a one-line note saying why).
+  The validator checks every excerpt against these files.
 - **If a URL can't be fetched directly** (the tool only opens links that appeared in a
   search), search for the page by its title or site and fetch the result.
 - **Excerpts are copied, never paraphrased or translated.** An excerpt is a passage of at
@@ -71,8 +79,8 @@ but do include them, so the reader can see which parts of the text are not backe
 anyone.
 
 **Critical claims.** Mark `critical: true` (with a short `critical_reason`) when the claim
-is a number, when the user would plausibly base a decision on it, or when it is
-surprising. Most texts have one to three critical claims; if everything is critical,
+is a number (always: rule C12), when the user would plausibly base a decision on it, or
+when it is surprising. `synthesis` and `opinion` claims are never critical (C12). Most texts have one to three critical claims; if everything is critical,
 nothing is.
 
 **More than 12 claims?** The report holds at most 12. Keep the critical ones first
@@ -144,7 +152,8 @@ A claim can be `supported` by one source and still carry `citation_mismatch` if 
 *cited* source doesn't hold it: in that case the outcome is `partial`, because the
 citation the reader would click is wrong. Keep `issues` empty for `supported` claims.
 
-For each evidence item build `deep_link` = source URL + `#:~:text=` + the excerpt (or its
+For each evidence item build `deep_link` = source URL (without any `#anchor`: drop it
+from the source's `url` too) + `#:~:text=` + the excerpt (or its
 first words) percent-encoded. Encode spaces as `%20`, `%` as `%25`, `,` as `%2C`, `-` as
 `%2D`, `&` as `%26`. The fragment text must be part of the excerpt.
 
@@ -229,9 +238,10 @@ The verdict is **computed, not judged**. Apply these rules in order (rule V1):
 
 1. **problematic** if at least one critical claim is `unsupported` or `contradicted`, or
    a critical claim's `supports` evidence comes only from `low` reliability sources.
-2. **reliable** if: at least one checkable claim exists; every critical claim is
-   `supported` with `independent_source_count >= 2`; no claim is `contradicted`; no
-   `supported` claim relies only on low-reliability sources.
+2. **reliable** if: at least one claim is `supported`; every critical claim is
+   `supported` with `independent_source_count >= 2`; no claim is `contradicted`,
+   `unsupported` or `unverifiable`; no `supported` claim relies only on low-reliability
+   sources.
 3. **needs_review** in every other case (including when no claim is checkable).
 
 `verdict.basis` lists the claims that triggered the rule (V2):
@@ -263,11 +273,14 @@ rules, it rejects the report and tells you which rule failed.
 
 ## 8. Self-check before handing the JSON back
 
-Run `python <skill>/scripts/render.py report.json --check-only` (add
-`--pages <dir>` if you saved each page's text as `<source_id>.txt`: then excerpts are
-checked verbatim; for a page you could not read, save a one-line note saying why). Fix every `FAIL <rule>` it prints and run it again until it prints
-`OK <status>`. Typical fixes:
+Run `python3 <skill>/scripts/render.py report.json --check-only --pages pages` (use
+`python` only where `python3` does not exist). `--pages` checks every excerpt verbatim
+against the page texts you saved. Fix every `FAIL <rule>` it prints and run it again
+until it prints `OK <status>`. Typical fixes:
 - T1: a segment was retyped instead of copied (apostrophes, double spaces, line breaks).
 - C9: recount origin groups among `supports` evidence only.
-- C10: the excerpt is too long, or the `#:~:text=` fragment isn't part of the excerpt.
+- C10: the excerpt is too long, the `#:~:text=` fragment isn't part of the excerpt, or
+  the excerpt is not in the saved page text (re-copy it from the file, don't retype it).
+- C11: the deep link doesn't start with the source's `url`, or that url still has a `#anchor`.
+- C12: a number claim isn't critical, or a synthesis/opinion claim is.
 - V1: you judged the verdict; apply the rules mechanically instead.

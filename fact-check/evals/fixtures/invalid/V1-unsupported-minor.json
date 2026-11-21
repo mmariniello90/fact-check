@@ -1,0 +1,175 @@
+{
+  "schema_version": "1.0",
+  "meta": {
+    "checked_at": "2026-11-14T08:00:00+00:00",
+    "language": "en",
+    "scope": "full_response",
+    "verifier_mode": "independent_agent",
+    "original_had_citations": true
+  },
+  "verdict": {
+    "status": "reliable",
+    "headline": "The ridership figure holds up, but the opening date is not in any source.",
+    "basis": [],
+    "counts": {
+      "supported": 1,
+      "partial": 0,
+      "unsupported": 1,
+      "contradicted": 0,
+      "unverifiable": 0,
+      "not_checkable": 1
+    }
+  },
+  "text": {
+    "original": "The Riverside tram line opened on 4 March 2024 and carried 2.1 million passengers in its first year. It is a model other mid-sized cities should follow.",
+    "segments": [
+      {
+        "text": "The Riverside tram line opened on 4 March 2024",
+        "claim_id": "c1"
+      },
+      {
+        "text": " and ",
+        "claim_id": null
+      },
+      {
+        "text": "carried 2.1 million passengers in its first year.",
+        "claim_id": "c2"
+      },
+      {
+        "text": " ",
+        "claim_id": null
+      },
+      {
+        "text": "It is a model other mid-sized cities should follow.",
+        "claim_id": "c3"
+      }
+    ]
+  },
+  "claims": [
+    {
+      "id": "c1",
+      "text": "The Riverside tram line opened on 4 March 2024",
+      "kind": "date",
+      "critical": false,
+      "critical_reason": null,
+      "outcome": "unsupported",
+      "reason": "The report gives no opening date; none of the sources does.",
+      "issues": [
+        "citation_mismatch"
+      ],
+      "cited_source_ids": [
+        "s1"
+      ],
+      "evidence": [],
+      "independent_source_count": 0
+    },
+    {
+      "id": "c2",
+      "text": "carried 2.1 million passengers in its first year.",
+      "kind": "number",
+      "critical": true,
+      "critical_reason": "It is the key figure of the answer.",
+      "outcome": "supported",
+      "reason": "Both the operator and the statistics office report 2.1 million trips.",
+      "issues": [],
+      "cited_source_ids": [
+        "s1"
+      ],
+      "evidence": [
+        {
+          "source_id": "s1",
+          "relation": "supports",
+          "excerpt": "2.1 million passenger trips in the first twelve months",
+          "deep_link": "https://transport-authority.example.org/annual-report-2025#:~:text=2.1%20million%20passenger%20trips%20in%20the%20first%20twelve%20months"
+        },
+        {
+          "source_id": "s2",
+          "relation": "supports",
+          "excerpt": "Riverside line: 2.1 million boardings (Mar 2024 - Feb 2025)",
+          "deep_link": "https://stats-office.example.gov/urban-mobility-2025#:~:text=Riverside%20line%3A%202.1%20million%20boardings"
+        }
+      ],
+      "independent_source_count": 2
+    },
+    {
+      "id": "c3",
+      "text": "It is a model other mid-sized cities should follow.",
+      "kind": "opinion",
+      "critical": false,
+      "critical_reason": null,
+      "outcome": "not_checkable",
+      "reason": "A recommendation by the model, not a fact from a source.",
+      "issues": [],
+      "cited_source_ids": [],
+      "evidence": [],
+      "independent_source_count": 0
+    }
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "url": "https://transport-authority.example.org/annual-report-2025",
+      "title": "Annual report 2025",
+      "publisher": "City Transport Authority",
+      "author": null,
+      "published_at": "2025-02-10",
+      "cited_in_original": true,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "primary",
+      "reliability": {
+        "level": "high",
+        "reason": "Operator's own ridership data from ticket validations.",
+        "lateral_check": "Public body; its figures are audited by the regional court of auditors."
+      },
+      "conflict_of_interest": "Operates the line: has an interest in good figures.",
+      "origin_group_id": "g1"
+    },
+    {
+      "id": "s2",
+      "url": "https://stats-office.example.gov/urban-mobility-2025",
+      "title": "Urban mobility statistics 2025",
+      "publisher": "National Statistics Office",
+      "author": null,
+      "published_at": "2025-09",
+      "cited_in_original": false,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "primary",
+      "reliability": {
+        "level": "high",
+        "reason": "Official statistics with published methodology.",
+        "lateral_check": "Cited as the reference source by universities and the press."
+      },
+      "conflict_of_interest": null,
+      "origin_group_id": "g2"
+    }
+  ],
+  "origin_groups": [
+    {
+      "id": "g1",
+      "label": "City Transport Authority annual report",
+      "source_ids": [
+        "s1"
+      ]
+    },
+    {
+      "id": "g2",
+      "label": "National Statistics Office",
+      "source_ids": [
+        "s2"
+      ]
+    }
+  ],
+  "omissions": [],
+  "follow_ups": [
+    {
+      "text": "Compare ridership with the forecast in the original business case",
+      "claim_id": "c2"
+    }
+  ]
+}

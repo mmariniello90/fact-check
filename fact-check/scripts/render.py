@@ -2,11 +2,11 @@
 """Validate a fact-check report JSON and render it into a self-contained HTML page.
 
 Usage:
-    python render.py REPORT.json [-o OUT.html] [--check-only] [--pages DIR]
+    python3 render.py REPORT.json [-o OUT.html] [--check-only] [--pages DIR]
 
 Steps:
   1. Validate REPORT.json against references/schema.json (JSON Schema Draft 2020-12).
-  2. Check every rule in the schema's x-invariants (T1-T3, C1-C11, S1-S4, V0-V2).
+  2. Check every rule in the schema's x-invariants (T1-T3, C1-C12, S1-S4, V0-V2).
      The verdict status is recomputed here (rule V1), never trusted.
   3. Only if everything passes: inject the JSON into assets/report.html and write
      the final HTML.
@@ -117,12 +117,15 @@ def compute_verdict(claims, src_by_id):
         blocks = False
         if c["critical"] and (c["outcome"] != "supported" or c["independent_source_count"] < 2):
             blocks = True
-        if c["outcome"] == "contradicted":
+        if c["outcome"] in {"contradicted", "unsupported", "unverifiable"}:
             blocks = True
         if c["outcome"] == "supported" and low_only(c, src_by_id):
             blocks = True
         if blocks:
             blockers.append(c["id"])
+    if not any(c["outcome"] == "supported" for c in claims):
+        # nothing in the text is actually backed by a source: never reliable
+        blockers += [c["id"] for c in checkable if c["id"] not in blockers]
     if not blockers:
         return "reliable", [], set()
 
@@ -205,6 +208,11 @@ def check_invariants(r, pages_dir=None):
             fail("C3", f"{cid}: critical=true requires critical_reason")
         if not c["critical"] and c["critical_reason"] is not None:
             fail("C3", f"{cid}: critical=false requires critical_reason=null")
+        # ---- C12
+        if c["critical"] and unchk:
+            fail("C12", f"{cid}: kind={c['kind']} cannot be critical (it is not checkable)")
+        if c["kind"] == "number" and not c["critical"]:
+            fail("C12", f"{cid}: kind=number must be critical")
         o = c["outcome"]
         # ---- C4
         if o == "supported":
@@ -256,8 +264,11 @@ def check_invariants(r, pages_dir=None):
                     fail("C10", f"{cid} evidence {k}: no page text {page.name} to check the excerpt against")
             # ---- C11
             src = src_by_id.get(e["source_id"])
-            if src is not None and not e["deep_link"].startswith(src["url"]):
-                fail("C11", f"{cid} evidence {k}: deep_link does not start with the url of {e['source_id']}")
+            if src is not None:
+                base = src["url"].split("#", 1)[0]
+                if e["deep_link"].split("#", 1)[0] != base or not e["deep_link"].startswith(base + "#:~:text="):
+                    fail("C11", f"{cid} evidence {k}: deep_link must be the url of {e['source_id']} "
+                                f"(without any #anchor) followed by #:~:text=")
 
     # ---- S1
     sids = [s["id"] for s in sources]
