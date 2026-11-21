@@ -16,15 +16,20 @@ It is built for the moment you get an answer from Claude and wonder: *can I trus
 
 **3. Checks each claim** for faithfulness to its source (`supported`, `partial`, `unsupported`, `contradicted`, `unverifiable`, `not_checkable`), rates each source's reliability, groups sources by origin (ten articles rewriting one press release count as one source), and looks for important omissions.
 
-**4. Computes the verdict by fixed rules** instead of asking the model for a judgment. *Problematic*: a critical claim is unsupported or contradicted, or rests only on low-reliability sources. *Reliable*: every critical claim is supported by at least 2 independent sources, and nothing is contradicted. *Needs review*: everything else.
+**4. Computes the verdict by fixed rules** instead of asking the model for a judgment. *Problematic*: a critical claim is unsupported or contradicted, or rests only on low-reliability sources. *Reliable*: every critical claim is supported by at least 2 independent sources, and no claim is contradicted, unsupported or unverifiable. *Needs review*: everything else.
 
-**5. Validates and renders the report** with `scripts/render.py`. The script checks the JSON against the schema and every invariant, and recomputes the verdict itself. An invalid report is never rendered.
+**5. Validates and renders the report** with `scripts/render.py`. The script checks the JSON against the schema and every invariant, and recomputes the verdict itself. It also checks every quoted excerpt against the text of the page the verifier saved. An invalid report is never rendered.
 
 *On the left: checking where the "eight spiders a year" myth comes from. The Snopes hoax story holds up, but the 1954-book theory traces back to that same hoax.*
 
-The report works on mobile, has light and dark mode, shows no numeric scores, and never relies on color alone. Each claim links to the exact excerpt on the source page through a text fragment. UI labels are available in English and Italian; the generated content follows the user's language.
+The report is a single self-contained HTML file with no external requests. It works on mobile, has light and dark mode, shows no numeric scores, and never relies on color alone. Each claim links to the exact excerpt on the source page through a text fragment. UI labels are available in English and Italian; the generated content follows the user's language.
 
 <br clear="left">
+
+## Limits
+
+- Excerpts are checked against the page text the verifier's fetch tool returned. Some fetch tools (WebFetch in Claude Code among them) pass pages through a model, so the method asks for the page's own words and rejects anything that reads like a summary. A quote can still differ slightly from the live page, in which case its link opens the page without jumping to the passage.
+- The verdict is only as good as the verifier's reading of the sources: it is a guide to where to look, not a final judgment.
 
 ## Requirements
 
@@ -71,6 +76,8 @@ Or just ask, in English or Italian:
 - "Verifica le fonti", "Controlla se è vero", "È affidabile?"
 
 To check only part of an answer, quote the passage in your message.
+
+A check re-reads every source and searches for independent confirmation, so it takes a few minutes and uses a fair number of tokens and web requests: more for long answers with many sources.
 
 Claude publishes the report as an artifact, or sends it as an HTML file if artifacts are not available, and writes a single line in the chat with the verdict and the headline:
 

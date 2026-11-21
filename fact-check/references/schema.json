@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.org/fact-check/report.schema.json",
+  "$id": "https://github.com/mmariniello90/fact-check/blob/main/fact-check/references/schema.json",
   "title": "Fact-check report",
   "description": "Contract between the analysis (produced by the verifier) and the HTML report template. The JSON must validate against this schema AND satisfy every rule in x-invariants, which scripts/render.py checks before rendering.",
   "type": "object",
@@ -81,7 +81,7 @@
           "id": { "$ref": "#/$defs/claimId" },
           "text": { "type": "string", "minLength": 1, "description": "Identical to the text of its segment." },
           "kind": { "enum": ["fact", "number", "date", "quote", "synthesis", "opinion"], "description": "synthesis and opinion are the model's own content and cannot be checked against a source." },
-          "critical": { "type": "boolean", "description": "true if the user would base a decision on it, or if it is a number or a surprising claim." },
+          "critical": { "type": "boolean", "description": "true if the user would base a decision on it, or if it is a number or a surprising claim. Always true for kind = number; never true for synthesis or opinion (rule C12)." },
           "critical_reason": { "type": ["string", "null"], "maxLength": 100, "description": "Required when critical = true, otherwise null." },
           "outcome": { "enum": ["supported", "partial", "unsupported", "contradicted", "unverifiable", "not_checkable"] },
           "reason": { "type": "string", "minLength": 5, "maxLength": 140, "description": "Why it got this outcome, in one line, in meta.language." },
@@ -119,7 +119,7 @@
         "required": ["id", "url", "title", "publisher", "author", "published_at", "cited_in_original", "access", "type", "reliability", "conflict_of_interest", "origin_group_id"],
         "properties": {
           "id": { "$ref": "#/$defs/sourceId" },
-          "url": { "type": "string", "format": "uri" },
+          "url": { "type": "string", "format": "uri", "description": "The page URL, without any #anchor (deep links append #:~:text= to it)." },
           "title": { "type": "string", "minLength": 1, "maxLength": 160 },
           "publisher": { "type": "string", "minLength": 1, "maxLength": 80 },
           "author": { "type": ["string", "null"], "maxLength": 80 },
@@ -223,8 +223,9 @@
       "C7. outcome = unsupported => no evidence with relation = supports.",
       "C8. outcome = unverifiable => every source in cited_source_ids has access.status = failed, and issues contains source_unreachable.",
       "C9. independent_source_count = number of distinct origin_group_id among sources of evidence with relation = supports.",
-      "C10. Every excerpt has at most 15 words and appears verbatim on the source page.",
-      "C11. deep_link starts with the url of the source named in source_id."
+      "C10. Every excerpt has at most 15 words, the deep link's text fragment is part of it, and (with render.py --pages) it appears verbatim in the saved page text.",
+      "C11. deep_link = the url of the source named in source_id, without any #anchor, followed directly by #:~:text=.",
+      "C12. kind = number => critical = true; kind in {synthesis, opinion} => critical = false."
     ],
     "sources": [
       "S1. Source ids are unique; every source_id referenced elsewhere exists.",
@@ -236,7 +237,7 @@
       "V0. counts matches the tally of outcomes in claims.",
       "V1. status is recomputed with the rules below, evaluated in order; it must equal the declared status.",
       "    1. problematic: at least one critical claim with outcome in {unsupported, contradicted}, OR at least one critical claim whose supporting evidence (relation = supports) comes only from sources with reliability.level = low.",
-      "    2. reliable: at least one checkable claim exists; every critical claim has outcome = supported and independent_source_count >= 2; no claim has outcome = contradicted; no supported claim relies only on low-reliability sources.",
+      "    2. reliable: at least one claim has outcome = supported; every critical claim has outcome = supported and independent_source_count >= 2; no claim has outcome in {contradicted, unsupported, unverifiable}; no supported claim relies only on low-reliability sources.",
       "    3. needs_review: every other case (including: no checkable claim).",
       "V2. verdict.basis lists the claims that triggered the applied rule; it is empty only when status = reliable."
     ],

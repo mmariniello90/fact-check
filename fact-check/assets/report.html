@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fact-check</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
 <style>
 :root{
   --surface-0:#f5f4ef;--surface-1:#faf9f5;--surface-2:#ffffff;
@@ -29,7 +28,7 @@ body{margin:0;background:var(--surface-0);color:var(--text-primary);font-family:
 .fc-card{background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;padding:.9rem 1rem;margin-bottom:10px}
 .fc-lbl{margin:0 0 8px;font-size:12px;color:var(--text-muted)}
 .fc-badge{display:inline-block;font-size:13px;font-weight:500;padding:4px 10px;border-radius:var(--radius);margin-bottom:8px}
-.fc-badge i{vertical-align:-2px;margin-right:4px}
+.fc-badge .ti{vertical-align:-0.2em;margin-right:4px}
 .fc-headline{margin:0 0 10px;font-size:15px;line-height:1.5}
 .fc-counts{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:13px;color:var(--text-secondary)}
 .fc-text{margin:0;font-size:15px;line-height:1.85;white-space:pre-wrap}
@@ -38,6 +37,7 @@ body{margin:0;background:var(--surface-0);color:var(--text-primary);font-family:
 .fc-head{display:flex;align-items:center;gap:8px;cursor:pointer}
 .fc-body{margin-top:10px}
 .fc-closed .fc-body{display:none}
+.ti{display:inline-block;width:1.15em;height:1.15em;vertical-align:-0.18em;flex-shrink:0}
 .fc-closed .ti-chevron-up{transform:rotate(180deg)}
 .fc-ev{border-left:2px solid var(--border-strong);padding:2px 0 2px 10px;margin:8px 0}
 .fc-ev p{margin:0;font-size:13px;font-style:italic;color:var(--text-secondary)}
@@ -212,7 +212,23 @@ function el(tag, attrs, children){
   });
   return e;
 }
-function icon(name, style){ return el("i", {"class": "ti " + name, style: style || "", "aria-hidden": "true"}); }
+/* Tabler Icons 3.34.0 (MIT, tabler.io), outline paths inlined so the report needs no network. */
+var ICONS = {"ti-alert-circle":["M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0","M12 8v4","M12 16h.01"],"ti-alert-octagon":["M12.802 2.165l5.575 2.389c.48 .206 .863 .589 1.07 1.07l2.388 5.574c.22 .512 .22 1.092 0 1.604l-2.389 5.575c-.206 .48 -.589 .863 -1.07 1.07l-5.574 2.388c-.512 .22 -1.092 .22 -1.604 0l-5.575 -2.389a2.036 2.036 0 0 1 -1.07 -1.07l-2.388 -5.574a2.036 2.036 0 0 1 0 -1.604l2.389 -5.575c.206 -.48 .589 -.863 1.07 -1.07l5.574 -2.388a2.036 2.036 0 0 1 1.604 0z","M12 8v4","M12 16h.01"],"ti-alert-triangle":["M12 9v4","M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z","M12 16h.01"],"ti-arrow-right":["M5 12l14 0","M13 18l6 -6","M13 6l6 6"],"ti-arrows-split":["M21 17h-8l-3.5 -5h-6.5","M21 7h-8l-3.495 5","M18 10l3 -3l-3 -3","M18 20l3 -3l-3 -3"],"ti-check":["M5 12l5 5l10 -10"],"ti-chevron-up":["M6 15l6 -6l6 6"],"ti-circle-check":["M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0","M9 12l2 2l4 -4"],"ti-circle-half-2":["M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0","M12 3v18","M12 14l7 -7","M12 19l8.5 -8.5","M12 9l4.5 -4.5"],"ti-circle-minus":["M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0","M9 12l6 0"],"ti-circle-x":["M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0","M10 10l4 4m0 -4l-4 4"],"ti-external-link":["M12 6h-6a2 2 0 0 0 -2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-6","M11 13l9 -9","M15 4h5v5"],"ti-help-circle":["M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0","M12 16v.01","M12 13a2 2 0 0 0 .914 -3.782a1.98 1.98 0 0 0 -2.414 .483"],"ti-info-circle":["M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0","M12 9h.01","M11 12h1v4h1"],"ti-link":["M9 15l6 -6","M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464","M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"],"ti-lock":["M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z","M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0","M8 11v-4a4 4 0 1 1 8 0v4"],"ti-message-circle":["M3 20l1.3 -3.9c-2.324 -3.437 -1.426 -7.872 2.1 -10.374c3.526 -2.501 8.59 -2.296 11.845 .48c3.255 2.777 3.695 7.266 1.029 10.501c-2.666 3.235 -7.615 4.215 -11.574 2.293l-4.7 1"],"ti-puzzle":["M4 7h3a1 1 0 0 0 1 -1v-1a2 2 0 0 1 4 0v1a1 1 0 0 0 1 1h3a1 1 0 0 1 1 1v3a1 1 0 0 0 1 1h1a2 2 0 0 1 0 4h-1a1 1 0 0 0 -1 1v3a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-1a2 2 0 0 0 -4 0v1a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1h1a2 2 0 0 0 0 -4h-1a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1"],"ti-shield-check":["M11.46 20.846a12 12 0 0 1 -7.96 -14.846a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.09 7.06","M15 19l2 2l4 -4"],"ti-shield-half":["M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3","M12 3v18"],"ti-shield-x":["M13.252 20.601c-.408 .155 -.826 .288 -1.252 .399a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3a12 12 0 0 1 -.19 7.357","M22 22l-5 -5","M17 22l5 -5"],"ti-users":["M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0","M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2","M16 3.13a4 4 0 0 1 0 7.75","M21 21v-2a4 4 0 0 0 -3 -3.85"],"ti-x":["M18 6l-12 12","M6 6l12 12"]};
+var SVG_NS = "http://www.w3.org/2000/svg";
+function icon(name, style){
+  var svg = document.createElementNS(SVG_NS, "svg");
+  var attrs = {"class": "ti " + name, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor",
+               "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round",
+               "aria-hidden": "true", focusable: "false"};
+  for (var k in attrs) svg.setAttribute(k, attrs[k]);
+  if (style) svg.setAttribute("style", style);
+  (ICONS[name] || []).forEach(function(d){
+    var p = document.createElementNS(SVG_NS, "path");
+    p.setAttribute("d", d);
+    svg.appendChild(p);
+  });
+  return svg;
+}
 function v(name){ return "var(" + name + ")"; }
 function plural(pair, n){ return n === 1 ? pair[0] : pair[1]; }
 function safeUrl(u){ return /^https?:\/\//i.test(u || "") ? u : "#"; }

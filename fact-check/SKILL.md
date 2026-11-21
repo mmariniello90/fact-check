@@ -67,8 +67,10 @@ Cited URLs: <one per line, or "none">
 meta: language=<code>, scope=<selection|full_response>, verifier_mode=independent_agent,
       checked_at=<ISO date-time>, original_had_citations=<true|false>
 
-Re-fetch every page yourself. Save the report to <work dir>/report.json, then run
-  python3 <skill>/scripts/render.py <work dir>/report.json --check-only
+Re-fetch every page yourself. Save the text you got from each page as
+<work dir>/pages/<source_id>.txt (a one-line note for a page you could not read).
+Save the report to <work dir>/report.json, then run
+  python3 <skill>/scripts/render.py <work dir>/report.json --check-only --pages <work dir>/pages
 and fix the JSON until it prints OK. Reply with the path of the JSON and the OK line.
 ```
 
@@ -78,7 +80,8 @@ conversation: not your reasoning, not page contents, not what you think the answ
 **Otherwise**, run the analysis yourself in this session, following
 `references/method.md`, with `meta.verifier_mode = "same_session_refetch"`. Re-fetch
 every page with WebFetch and work only from what the fetch returns, never from what is
-already in the conversation.
+already in the conversation. Save each page's text as `pages/<source_id>.txt` in your
+work directory, as the agent would.
 
 ## 3. Validate and render
 
@@ -105,19 +108,19 @@ If that fails:
 Then validate and render:
 
 ```bash
-python3 <skill>/scripts/render.py report.json -o fact-check-report.html
+python3 <skill>/scripts/render.py <work dir>/report.json -o fact-check-report.html --pages <work dir>/pages
 ```
 
+Always pass `--pages`: it is what checks that every excerpt really appears in the page
+text the verifier read (rule C10). Without it only the excerpt's length and link are checked.
+
 `render.py` validates against the schema (Draft 2020-12), checks every rule in
-`x-invariants` (T1–T3, C1–C11, S1–S4, V0–V2) and recomputes the verdict itself. On any
+`x-invariants` (T1–T3, C1–C12, S1–S4, V0–V2) and recomputes the verdict itself. On any
 failure it prints `FAIL <rule-id>: ...` lines and exits non-zero, writing nothing: fix the
 JSON (or, with an independent agent, send the failures back to that same agent to fix)
 and run it again. Never render an invalid report and never hand-edit the HTML: the
 report has to look the same on every run. Exit code 3 means `jsonschema` is missing or
 older than 4.18: go back to the dependency check above.
-
-If the verifier saved the text of each fetched page as `<source_id>.txt` in a folder,
-add `--pages <folder>` so excerpts are also checked verbatim (rule C10).
 
 ## 4. Deliver
 

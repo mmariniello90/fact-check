@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0",
+  "meta": {
+    "checked_at": "2026-11-14T08:00:00+00:00",
+    "language": "en",
+    "scope": "full_response",
+    "verifier_mode": "independent_agent",
+    "original_had_citations": true
+  },
+  "verdict": {
+    "status": "reliable",
+    "headline": "The ridership figure holds up, but the opening date is not in any source.",
+    "basis": [],
+    "counts": {
+      "supported": 0,
+      "partial": 0,
+      "unsupported": 1,
+      "contradicted": 0,
+      "unverifiable": 0,
+      "not_checkable": 1
+    }
+  },
+  "text": {
+    "original": "The Riverside tram line opened on 4 March 2024 and carried 2.1 million passengers in its first year. It is a model other mid-sized cities should follow.",
+    "segments": [
+      {
+        "text": "The Riverside tram line opened on 4 March 2024",
+        "claim_id": "c1"
+      },
+      {
+        "text": " and carried 2.1 million passengers in its first year. ",
+        "claim_id": null
+      },
+      {
+        "text": "It is a model other mid-sized cities should follow.",
+        "claim_id": "c2"
+      }
+    ]
+  },
+  "claims": [
+    {
+      "id": "c1",
+      "text": "The Riverside tram line opened on 4 March 2024",
+      "kind": "date",
+      "critical": false,
+      "critical_reason": null,
+      "outcome": "unsupported",
+      "reason": "The report gives no opening date; none of the sources does.",
+      "issues": [
+        "citation_mismatch"
+      ],
+      "cited_source_ids": [
+        "s1"
+      ],
+      "evidence": [],
+      "independent_source_count": 0
+    },
+    {
+      "id": "c2",
+      "text": "It is a model other mid-sized cities should follow.",
+      "kind": "opinion",
+      "critical": false,
+      "critical_reason": null,
+      "outcome": "not_checkable",
+      "reason": "A recommendation by the model, not a fact from a source.",
+      "issues": [],
+      "cited_source_ids": [],
+      "evidence": [],
+      "independent_source_count": 0
+    }
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "url": "https://transport-authority.example.org/annual-report-2025",
+      "title": "Annual report 2025",
+      "publisher": "City Transport Authority",
+      "author": null,
+      "published_at": "2025-02-10",
+      "cited_in_original": true,
+      "access": {
+        "status": "full",
+        "issue": null
+      },
+      "type": "primary",
+      "reliability": {
+        "level": "high",
+        "reason": "Operator's own ridership data from ticket validations.",
+        "lateral_check": "Public body; its figures are audited by the regional court of auditors."
+      },
+      "conflict_of_interest": "Operates the line: has an interest in good figures.",
+      "origin_group_id": "g1"
+    }
+  ],
+  "origin_groups": [
+    {
+      "id": "g1",
+      "label": "City Transport Authority annual report",
+      "source_ids": [
+        "s1"
+      ]
+    }
+  ],
+  "omissions": [],
+  "follow_ups": []
+}
